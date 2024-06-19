@@ -112,6 +112,7 @@ void rotate_piece() {
 
       // Если не удалось избежать коллизий, проверим границы и скорректируем
       if (collision) {
+        // Корректируем положение фигуры относительно границ поля
         for (int x = 0; x < 4; x++) {
           for (int y = 0; y < 4; y++) {
             if (s->current_piece.shape[y][x] != 0) {
@@ -127,19 +128,33 @@ void rotate_piece() {
             }
           }
         }
-      }
 
-      // Если все еще не удалось избежать коллизий, отменяем поворот
-      if (check_collision()) {
-        for (int y = 0; y < 4; y++) {
-          for (int x = 0; x < 4; x++) {
-            s->current_piece.shape[y][x] = temp_shape[y][x];
+        // Повторная проверка коллизий после корректировки
+        if (check_collision()) {
+          // Попробуем переместить фигуру только по горизонтали
+          for (int dx = -2; dx <= 2 && collision; dx++) {
+            s->current_piece.x += dx;
+            if (!check_collision()) {
+              collision = false;
+              break;
+            }
+            s->current_piece.x -= dx;
+          }
+
+          // Если все еще не удалось избежать коллизий, отменяем поворот
+          if (collision) {
+            for (int y = 0; y < 4; y++) {
+              for (int x = 0; x < 4; x++) {
+                s->current_piece.shape[y][x] = temp_shape[y][x];
+              }
+            }
           }
         }
       }
     }
   }
 }
+
 
 
 
