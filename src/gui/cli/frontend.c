@@ -6,33 +6,35 @@ void main_menu_init() {
   draw_score(0, 0, 0);
   int choice = 0;
   int ch;
-  char* choices[] = {"Tetris", "Quit"};
-  int n_choices = sizeof(choices) / sizeof(char*);
+  char *choices[] = {"Tetris", "Quit"};
+  int n_choices = sizeof(choices) / sizeof(char *);
 
   while (true) {
     int menu_start_x = (WIDTH * 2) / 2 - 3;
     int menu_start_y = HEIGHT / 2 - n_choices / 2;
     for (int i = 0; i < n_choices; ++i) {
-      if (i == choice) attron(A_REVERSE);
+      if (i == choice)
+        attron(A_REVERSE);
       mvprintw(menu_start_y + i, menu_start_x, "%s", choices[i]);
-      if (i == choice) attroff(A_REVERSE);
+      if (i == choice)
+        attroff(A_REVERSE);
     }
     refresh();
     ch = GET_USER_INPUT;
     switch (ch) {
-      case KEY_UP:
-        choice = (choice == 0) ? n_choices - 1 : choice - 1;
-        break;
-      case KEY_DOWN:
-        choice = (choice == n_choices - 1) ? 0 : choice + 1;
-        break;
-      case 10:
-        if (choice == 0) {
-          play_tetris();
-        } else if (choice == 1) {
-          exitProgram();
-        }
-        return;
+    case KEY_UP:
+      choice = (choice == 0) ? n_choices - 1 : choice - 1;
+      break;
+    case KEY_DOWN:
+      choice = (choice == n_choices - 1) ? 0 : choice + 1;
+      break;
+    case 10:
+      if (choice == 0) {
+        play_tetris();
+      } else if (choice == 1) {
+        exitProgram();
+      }
+      return;
     }
   }
 }
@@ -50,25 +52,28 @@ void play_tetris() {
   int ch = 0;
   while (ch != 'S' && ch != 's') {
     ch = GET_USER_INPUT;
-    draw_key(ch);  // del
+    //  draw_key(ch);  // del
   }
   tetris_start();
 }
 
 void exitProgram() {
-  Singleton* s = get_instance();
-  if (s->game.field) free_game_resources();
+  Singleton *s = get_instance();
+  if (s->game.field || s->game.next)
+    free_game_resources();
+  free_singleton();
   clear();
   endwin();
   exit(0);
 }
 
 void update_field(GameInfo_t game) {
-  Singleton* s = get_instance();
+  Singleton *s = get_instance();
   clear();
   draw_board();
   draw_field(game);
   draw_score(game.score, game.high_score, game.level);
+  draw_next(s->game);
   draw_piece(s->current_piece);
   refresh();
 }
@@ -93,7 +98,7 @@ void draw_field(GameInfo_t game_curr) {
 }
 
 void draw_score(int score, int high_score, int level) {
-  Singleton* s = get_instance();
+  // Singleton* s = get_instance();
   int info_start_x = WIDTH * 2 + 4;
   // if (high_score < score) high_score = score;
   mvprintw(0, info_start_x, "High Score:%d", high_score);
@@ -113,14 +118,22 @@ void draw_board() {
   }
 }
 void draw_next(GameInfo_t game) {
-  for (int y = 0; y < HEIGHT + 2; y++) {
-    for (int x = 0; x < WIDTH * 2 + 2; x++) {
-      if (y == 0 || y == HEIGHT + 1 || x == 0 || x == WIDTH * 2 + 1) {
-        mvprintw(y, x, "#");
+  int base_x = WIDTH + 2; // Пример координаты x для отображения следующей
+                          // фигуры (справа от игрового поля)
+  int base_y =
+      7; // Пример координаты y для отображения следующей фигуры (вверху экрана)
+
+  mvprintw(6, 24, "Next:");
+  for (int y = 0; y < 4; y++) {
+    for (int x = 0; x < 4; x++) {
+      if (game.next[y][x] != 0) {
+        mvprintw(base_y + y + 1, (base_x + x) * 2 + 1, "[]");
       }
     }
   }
+  refresh();
 }
+
 void draw_piece(Piece piece) {
   for (int y = 0; y < 4; y++) {
     for (int x = 0; x < 4; x++) {
@@ -132,7 +145,7 @@ void draw_piece(Piece piece) {
   refresh();
 }
 void free_game_resources() {
-  Singleton* s = get_instance();
+  Singleton *s = get_instance();
   if (s->game.field != NULL) {
     for (int i = 0; i < HEIGHT; i++) {
       if (s->game.field[i] != NULL) {
@@ -142,10 +155,20 @@ void free_game_resources() {
     free(s->game.field);
     s->game.field = NULL;
   }
+  if (s->game.next != NULL) {
+    for (int i = 0; i < 4; i++) {
+      if (s->game.next[i] != NULL) {
+        free(s->game.next[i]);
+      }
+    }
+    free(s->game.next);
+    s->game.next = NULL;
+  }
 }
 void draw_key(char ch) {
   int info_start_x = WIDTH * 2 + 4;
-  if (ch != -1) mvprintw(8, info_start_x, "CHAR:%c INT %d", ch, ch);
+  if (ch != -1)
+    mvprintw(8, info_start_x, "CHAR:%c INT %d", ch, ch);
   refresh();
 }
 void game_over_menu() {

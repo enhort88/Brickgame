@@ -20,5 +20,5 @@ void update_field(GameInfo_t game);
 void draw_piece(Piece piece);
 void free_game_resources();
 void draw_key(char ch);  //del
-void game_over_menu() ;           
+void game_over_menu();           
 #endif

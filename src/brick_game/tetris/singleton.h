@@ -8,9 +8,11 @@ typedef struct {
     FSMState state;
     Piece current_piece;
     UserAction_t action;
+    int shape_curr;
 
 } Singleton;
 
 Singleton* get_instance();
+void free_singleton();
 
 #endif // SINGLETON_H
