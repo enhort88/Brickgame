@@ -12,26 +12,21 @@ void init_piece() {
   s->current_piece.y = 0;
 
   // Определение различных форм фигур
-  int shapes[7][4][4] = {
-      {{1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, // I
-      {{1, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, // O
-      {{1, 1, 1, 0}, {0, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, // T
-      {{1, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, // Z
-      {{0, 1, 1, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, // S
-      {{1, 1, 1, 0}, {1, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, // L
-      {{1, 1, 1, 0}, {0, 0, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}  // J
-  };
+  int shapes[7][4][4] = SHAPES;
 
   // Инициализация генератора случайных чисел
   srand(time(NULL));
   int shape_next = rand() % 7;
+  find_center (shape_next);
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
       s->game.next[i][j] = shapes[shape_next][i][j];
     }
   }
-  if (s->shape_curr == -1)
+  if (s->shape_curr == -1){
     s->shape_curr = rand() % 7;
+    find_center(s->shape_curr);
+    }
   memcpy(s->current_piece.shape, shapes[s->shape_curr],
          sizeof(shapes[s->shape_curr]));
   s->shape_curr = shape_next;
@@ -69,16 +64,12 @@ void move_piece_up() {
   //
 }
 
-#include "../../gui/cli/frontend.h"
-#include "backend.h"
-#include "singleton.h"
-#include <time.h>
-
 void rotate_piece() {
   Singleton *s = get_instance();
-  if (s->state == MOVING) {
+  if (s->state == MOVING && s->shape_curr!=4) {
     int temp_shape[4][4] = {0};
-
+    int center_x = s->current_piece.c_x;
+    int center_y = s->current_piece.c_y;
     // Транспонируем матрицу
     for (int y = 0; y < 4; y++) {
       for (int x = 0; x < 4; x++) {
@@ -151,13 +142,13 @@ void rotate_piece() {
           }
         }
       }
+    }else{
+      s->current_piece.x += center_x - s->current_piece.c_x;
+      s->current_piece.y += center_y - s->current_piece.c_y;
     }
+
   }
 }
-
-
-
-
 bool check_collision() {
   Singleton *s = get_instance();
   for (int y = 0; y < 4; y++) {
@@ -237,5 +228,27 @@ void clear_lines(int line) {
   }
   for (int x = 0; x < WIDTH; x++) {
     s->game.field[0][x] = 0;
+  }
+}
+void find_center(int type_shape){
+  Singleton *s = get_instance();
+  switch (type_shape)
+  {
+  case 0:
+    s->current_piece.c_x = 2;
+    s->current_piece.c_y = 0;
+    break;
+  case 1:
+    s->current_piece.c_x = 0;
+    s->current_piece.c_y = 0;
+    break;
+  case 2:
+  case 3:
+  case 4:
+  case 5:
+  case 6:
+    s->current_piece.c_x = 1;
+    s->current_piece.c_y = 0;
+    break;
   }
 }

@@ -38,7 +38,8 @@ typedef struct {
 
 typedef struct {
     int x, y; 
-    int shape[4][4]; 
+    int shape[4][4];
+    int c_x, c_y; 
 } Piece;
 
 #include "singleton.h" 
