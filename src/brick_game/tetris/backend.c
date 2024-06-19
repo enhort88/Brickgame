@@ -66,10 +66,12 @@ void move_piece_up() {
 
 void rotate_piece() {
   Singleton *s = get_instance();
-  if (s->state == MOVING && s->shape_curr!=4) {
+  if (s->state == MOVING) {
     int temp_shape[4][4] = {0};
-    int center_x = s->current_piece.c_x;
-    int center_y = s->current_piece.c_y;
+    // int original_x = s->current_piece.x;
+    // int original_y = s->current_piece.y;
+    // int center_x = s->current_piece.c_x;
+    // int center_y = s->current_piece.c_y;
     // Транспонируем матрицу
     for (int y = 0; y < 4; y++) {
       for (int x = 0; x < 4; x++) {
@@ -83,7 +85,8 @@ void rotate_piece() {
         s->current_piece.shape[y][x] = temp_shape[y][3 - x];
       }
     }
-
+//    s->current_piece.x = original_x;
+//    s->current_piece.y = original_y + (center_y - s->current_piece.c_y);
     // Проверка коллизий
     if (check_collision()) {
       // Попробуем сдвинуть фигуру, чтобы она не застревала в стене
@@ -142,11 +145,7 @@ void rotate_piece() {
           }
         }
       }
-    }else{
-      s->current_piece.x += center_x - s->current_piece.c_x;
-      s->current_piece.y += center_y - s->current_piece.c_y;
     }
-
   }
 }
 bool check_collision() {
