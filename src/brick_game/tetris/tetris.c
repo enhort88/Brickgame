@@ -10,7 +10,7 @@ void tetris_start() {
   int pocket = '\0';
   bool hold = false;
   clock_t last_update_time;
-  int update_interval = 2000;
+  int update_interval = 2500;
   last_update_time = clock();
   nodelay(stdscr, TRUE);
   while (s->state != GAME_OVER) {

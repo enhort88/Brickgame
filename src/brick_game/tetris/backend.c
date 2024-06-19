@@ -77,7 +77,6 @@ void move_piece_up() {
 void rotate_piece() {
   Singleton *s = get_instance();
   if (s->state == MOVING) {
-    // Создаем временную матрицу для хранения новой формы после поворота
     int temp_shape[4][4] = {0};
 
     // Транспонируем матрицу
@@ -97,27 +96,52 @@ void rotate_piece() {
     // Проверка коллизий
     if (check_collision()) {
       // Попробуем сдвинуть фигуру, чтобы она не застревала в стене
-      for (int dx = -1; dx <= 1; dx++) {
-        for (int dy = -1; dy <= 1; dy++) {
+      bool collision = true;
+      for (int dx = -1; dx <= 1 && collision; dx++) {
+        for (int dy = -1; dy <= 1 && collision; dy++) {
           s->current_piece.x += dx;
           s->current_piece.y += dy;
           if (!check_collision()) {
-            return; // Если удалось найти положение без коллизий, выходим
+            collision = false;
+            break;
           }
           s->current_piece.x -= dx;
           s->current_piece.y -= dy;
         }
       }
 
-      // Если не удалось избежать коллизий, отменяем поворот
-      for (int y = 0; y < 4; y++) {
+      // Если не удалось избежать коллизий, проверим границы и скорректируем
+      if (collision) {
         for (int x = 0; x < 4; x++) {
-          s->current_piece.shape[y][x] = temp_shape[y][x];
+          for (int y = 0; y < 4; y++) {
+            if (s->current_piece.shape[y][x] != 0) {
+              if (s->current_piece.x + x < 0) {
+                s->current_piece.x++;
+              }
+              if (s->current_piece.x + x >= WIDTH) {
+                s->current_piece.x--;
+              }
+              if (s->current_piece.y + y >= HEIGHT) {
+                s->current_piece.y--;
+              }
+            }
+          }
+        }
+      }
+
+      // Если все еще не удалось избежать коллизий, отменяем поворот
+      if (check_collision()) {
+        for (int y = 0; y < 4; y++) {
+          for (int x = 0; x < 4; x++) {
+            s->current_piece.shape[y][x] = temp_shape[y][x];
+          }
         }
       }
     }
   }
 }
+
+
 
 bool check_collision() {
   Singleton *s = get_instance();
