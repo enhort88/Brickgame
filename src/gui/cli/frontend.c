@@ -13,28 +13,25 @@ void main_menu_init() {
     int menu_start_x = (WIDTH * 2) / 2 - 3;
     int menu_start_y = HEIGHT / 2 - n_choices / 2;
     for (int i = 0; i < n_choices; ++i) {
-      if (i == choice)
-        attron(A_REVERSE);
+      if (i == choice) attron(A_REVERSE);
       mvprintw(menu_start_y + i, menu_start_x, "%s", choices[i]);
-      if (i == choice)
-        attroff(A_REVERSE);
+      if (i == choice) attroff(A_REVERSE);
     }
     refresh();
     ch = GET_USER_INPUT;
     switch (ch) {
-    case KEY_UP:
-      choice = (choice == 0) ? n_choices - 1 : choice - 1;
-      break;
-    case KEY_DOWN:
-      choice = (choice == n_choices - 1) ? 0 : choice + 1;
-      break;
-    case 10:
-      if (choice == 0) {
-        play_tetris();
-      } else if (choice == 1) {
-        exitProgram();
-      }
-      return;
+      case KEY_UP:
+        choice = (choice == 0) ? n_choices - 1 : choice - 1;
+        break;
+      case KEY_DOWN:
+        choice = (choice == n_choices - 1) ? 0 : choice + 1;
+        break;
+      case 10:
+        if (choice == 0) {
+          play_tetris();
+        } else if (choice == 1) {
+          return;
+        }
     }
   }
 }
@@ -57,23 +54,13 @@ void play_tetris() {
   tetris_start();
 }
 
-void exitProgram() {
-  Singleton *s = get_instance();
-  if (s->game.field || s->game.next)
-    free_game_resources();
-  free_singleton();
-  clear();
-  endwin();
-  exit(0);
-}
-
 void update_field(GameInfo_t game) {
   Singleton *s = get_instance();
   clear();
   draw_board();
   draw_field(game);
   draw_score(game.score, game.high_score, game.level);
-  draw_next(s->game);
+  draw_next(game);
   draw_piece(s->current_piece);
   refresh();
 }
@@ -118,10 +105,10 @@ void draw_board() {
   }
 }
 void draw_next(GameInfo_t game) {
-  int base_x = WIDTH + 2; // Пример координаты x для отображения следующей
-                          // фигуры (справа от игрового поля)
-  int base_y =
-      7; // Пример координаты y для отображения следующей фигуры (вверху экрана)
+  int base_x = WIDTH + 2;  // Пример координаты x для отображения следующей
+                           // фигуры (справа от игрового поля)
+  int base_y = 7;  // Пример координаты y для отображения следующей фигуры
+                   // (вверху экрана)
 
   mvprintw(6, 24, "Next:");
   for (int y = 0; y < 4; y++) {
@@ -167,8 +154,7 @@ void free_game_resources() {
 }
 void draw_key(char ch) {
   int info_start_x = WIDTH * 2 + 4;
-  if (ch != -1)
-    mvprintw(8, info_start_x, "CHAR:%c INT %d", ch, ch);
+  if (ch != -1) mvprintw(8, info_start_x, "CHAR:%c INT %d", ch, ch);
   refresh();
 }
 void game_over_menu() {
@@ -183,5 +169,8 @@ void game_over_menu() {
   while (ch != 32 && ch != 32) {
     ch = GET_USER_INPUT;
   }
-  main_menu_init();
+  clear();
+  draw_board();
+  draw_score(0, 0, 0);
+  return;
 }

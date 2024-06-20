@@ -1,12 +1,16 @@
 #include "backend.h"
 
+
 #include "../../gui/cli/frontend.h"
 #include "singleton.h"
 
 void init_piece() {
-  // static int count = 1;
   Singleton *s = get_instance();
+  struct timespec tv;
+  clock_gettime(CLOCK_MONOTONIC, &tv);
 
+  unsigned int seed = tv.tv_sec * 1000000 + tv.tv_nsec / 1000;
+  srand(seed);
   // Инициализация новой фигуры в верхней части экрана
   s->current_piece.x = WIDTH / 2 - 2;
   s->current_piece.y = 0;
@@ -17,18 +21,18 @@ void init_piece() {
   // Инициализация генератора случайных чисел
   srand(time(NULL));
   int shape_next = rand() % 7;
-  find_center (shape_next);
+
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
       s->game.next[i][j] = shapes[shape_next][i][j];
     }
   }
-  if (s->shape_curr == -1){
+  if (s->shape_curr == -1) {
     s->shape_curr = rand() % 7;
-    find_center(s->shape_curr);
-    }
+  }
   memcpy(s->current_piece.shape, shapes[s->shape_curr],
          sizeof(shapes[s->shape_curr]));
+  s->current_piece.type = s->shape_curr;
   s->shape_curr = shape_next;
 }
 
@@ -61,17 +65,13 @@ void move_piece_right() {
 }
 
 void move_piece_up() {
-  //
 }
 
 void rotate_piece() {
   Singleton *s = get_instance();
-  if (s->state == MOVING) {
+  if (s->state == MOVING && s->current_piece.type != 1) {
     int temp_shape[4][4] = {0};
-    // int original_x = s->current_piece.x;
-    // int original_y = s->current_piece.y;
-    // int center_x = s->current_piece.c_x;
-    // int center_y = s->current_piece.c_y;
+
     // Транспонируем матрицу
     for (int y = 0; y < 4; y++) {
       for (int x = 0; x < 4; x++) {
@@ -82,11 +82,10 @@ void rotate_piece() {
     // Отражаем матрицу по вертикали
     for (int y = 0; y < 4; y++) {
       for (int x = 0; x < 4; x++) {
-        s->current_piece.shape[y][x] = temp_shape[y][3 - x];
+        s->current_piece.shape[x][y] = temp_shape[x][3 - y];
       }
     }
-//    s->current_piece.x = original_x;
-//    s->current_piece.y = original_y + (center_y - s->current_piece.c_y);
+
     // Проверка коллизий
     if (check_collision()) {
       // Попробуем сдвинуть фигуру, чтобы она не застревала в стене
@@ -227,27 +226,5 @@ void clear_lines(int line) {
   }
   for (int x = 0; x < WIDTH; x++) {
     s->game.field[0][x] = 0;
-  }
-}
-void find_center(int type_shape){
-  Singleton *s = get_instance();
-  switch (type_shape)
-  {
-  case 0:
-    s->current_piece.c_x = 2;
-    s->current_piece.c_y = 0;
-    break;
-  case 1:
-    s->current_piece.c_x = 0;
-    s->current_piece.c_y = 0;
-    break;
-  case 2:
-  case 3:
-  case 4:
-  case 5:
-  case 6:
-    s->current_piece.c_x = 1;
-    s->current_piece.c_y = 0;
-    break;
   }
 }

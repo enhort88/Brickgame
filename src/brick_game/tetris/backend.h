@@ -4,6 +4,7 @@
 #include "tetris.h"
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 #define SHAPE_I {{1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 #define SHAPE_O {{1, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
@@ -18,12 +19,11 @@ void init_piece();
 void reset_game();
 void spawn_piece();
 void move_piece_down();
-void down();
+
 void move_piece_left();
 void move_piece_right();
 void move_piece_up();
 void rotate_piece();
-void find_center(int type_shape);
 
 void clear_lines(int line);
 

@@ -8,7 +8,7 @@
 #define HEIGHT 20
 
 void play_tetris();
-void exitProgram(); 
+
 
 void main_menu_init();
 void draw_menu();
