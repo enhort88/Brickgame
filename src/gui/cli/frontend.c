@@ -3,7 +3,8 @@
 void main_menu_init() {
   clear();
   draw_board();
-  draw_score(0, 0, 0);
+  int high_score = read_high_score();
+  draw_score(0, high_score, 0);
   int choice = 0;
   int ch;
   char *choices[] = {"Tetris", "Quit"};
@@ -41,7 +42,8 @@ void play_tetris() {
   int menu_start_x = (WIDTH * 2) / 2 - 3;
   int menu_start_y = HEIGHT / 2 - 2 / 2;
   draw_board();
-  draw_score(0, 0, 0);
+  int high_score = read_high_score();
+  draw_score(0, high_score, 0);
 
   mvprintw(menu_start_y, menu_start_x - 1, "Tetris game");
   mvprintw(menu_start_y + 1, menu_start_x - 5, "Press \"S\" for Start");
@@ -59,6 +61,11 @@ void update_field(GameInfo_t game) {
   clear();
   draw_board();
   draw_field(game);
+  s->game.high_score = read_high_score();
+  if (s->game.score > s->game.high_score) {
+
+        write_high_score(s->game.score);
+    }
   draw_score(game.score, game.high_score, game.level);
   draw_next(game);
   draw_piece(s->current_piece);
@@ -162,7 +169,8 @@ void game_over_menu() {
   int menu_start_x = (WIDTH * 2) / 2 - 3;
   int menu_start_y = HEIGHT / 2 - 2 / 2;
   draw_board();
-  draw_score(0, 0, 0);
+  int high_score = read_high_score();
+  draw_score(0, high_score, 0);
   mvprintw(menu_start_y, menu_start_x - 1, "GAME OVER");
   mvprintw(menu_start_y + 1, menu_start_x - 2, "Press \"Space\"");
   int ch = 0;
@@ -171,6 +179,27 @@ void game_over_menu() {
   }
   clear();
   draw_board();
-  draw_score(0, 0, 0);
+  draw_score(0, high_score, 0);
   return;
+}
+
+int read_high_score() {
+    FILE *file = fopen(HIGH_SCORE_FILE, "r");
+    if (!file) {
+        return 0; // Если файл не найден, вернуть 0
+    }
+
+    int high_score = 0;
+    fscanf(file, "%d", &high_score);
+    fclose(file);
+
+    return high_score;
+}
+
+void write_high_score(int high_score) {
+    FILE *file = fopen(HIGH_SCORE_FILE, "w");
+    if (file) {
+        fprintf(file, "%d", high_score);
+        fclose(file);
+    }
 }

@@ -3,6 +3,7 @@
 
 #include <unistd.h>
 #include "../../brick_game/tetris/tetris.h"
+#define HIGH_SCORE_FILE "highscore.txt"
 
 #define WIDTH 10
 #define HEIGHT 20
@@ -20,5 +21,7 @@ void update_field(GameInfo_t game);
 void draw_piece(Piece piece);
 void free_game_resources();
 void draw_key(char ch);  //del
-void game_over_menu();           
+void game_over_menu();
+int read_high_score();         
+void write_high_score(int high_score);  
 #endif

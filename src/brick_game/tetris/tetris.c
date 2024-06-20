@@ -69,7 +69,7 @@ void initialize_game() {
     }
   }
   s->game.score = 0;
-  s->game.high_score = 0;
+  s->game.high_score = read_high_score();
   s->game.level = 0;
   s->game.speed = 8000;
 

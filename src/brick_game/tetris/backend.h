@@ -32,8 +32,6 @@ bool check_collision_end_game();
 void attach_piece_to_field();
 void check_for_complete_lines();
 
-void update_score(); 
-void save_high_score(); 
-int load_high_score(); 
+
 
 #endif
