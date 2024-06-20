@@ -1,6 +1,5 @@
 #include "backend.h"
 
-
 #include "../../gui/cli/frontend.h"
 #include "singleton.h"
 
@@ -64,8 +63,7 @@ void move_piece_right() {
   }
 }
 
-void move_piece_up() {
-}
+void move_piece_up() {}
 
 void rotate_piece() {
   Singleton *s = get_instance();
@@ -201,6 +199,8 @@ void attach_piece_to_field() {
 
 void check_for_complete_lines() {
   Singleton *s = get_instance();
+  int lines_cleared = 0;
+
   for (int y = 0; y < HEIGHT; y++) {
     bool complete = true;
     for (int x = 0; x < WIDTH; x++) {
@@ -210,12 +210,32 @@ void check_for_complete_lines() {
       }
     }
     if (complete) {
-      // Удаление линии и обновление счета
       clear_lines(y);
-      s->game.score += 100; // Пример обновления счета
+      lines_cleared++;
+      y--;  // Проверяем ту же строку ещё раз, так как она теперь заполнена
+            // строкой выше
     }
   }
-  s->state = SPAWN; // Добавлено для смены состояния после проверки линий
+
+  // Начисление очков в зависимости от количества очищенных линий
+  switch (lines_cleared) {
+    case 1:
+      s->game.score += 100;
+      break;
+    case 2:
+      s->game.score += 300;
+      break;
+    case 3:
+      s->game.score += 700;
+      break;
+    case 4:
+      s->game.score += 1500;
+      break;
+    default:
+      break;
+  }
+
+  s->state = SPAWN;  // Смена состояния после проверки линий
 }
 void clear_lines(int line) {
   Singleton *s = get_instance();

@@ -63,9 +63,8 @@ void update_field(GameInfo_t game) {
   draw_field(game);
   s->game.high_score = read_high_score();
   if (s->game.score > s->game.high_score) {
-
-        write_high_score(s->game.score);
-    }
+    write_high_score(s->game.score);
+  }
   draw_score(game.score, game.high_score, game.level);
   draw_next(game);
   draw_piece(s->current_piece);
@@ -184,22 +183,22 @@ void game_over_menu() {
 }
 
 int read_high_score() {
-    FILE *file = fopen(HIGH_SCORE_FILE, "r");
-    if (!file) {
-        return 0; // Если файл не найден, вернуть 0
-    }
+  FILE *file = fopen(HIGH_SCORE_FILE, "r");
+  if (!file) {
+    return 0;  // Если файл не найден, вернуть 0
+  }
 
-    int high_score = 0;
-    fscanf(file, "%d", &high_score);
-    fclose(file);
+  int high_score = 0;
+  fscanf(file, "%d", &high_score);
+  fclose(file);
 
-    return high_score;
+  return high_score;
 }
 
 void write_high_score(int high_score) {
-    FILE *file = fopen(HIGH_SCORE_FILE, "w");
-    if (file) {
-        fprintf(file, "%d", high_score);
-        fclose(file);
-    }
+  FILE *file = fopen(HIGH_SCORE_FILE, "w");
+  if (file) {
+    fprintf(file, "%d", high_score);
+    fclose(file);
+  }
 }

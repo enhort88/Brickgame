@@ -113,7 +113,6 @@ UserAction_t keyboard_action(int *ch, int *pocket, bool *hold) {
       return Start;
     case 'q':
       return Terminate;
-
   }
 }
 void transitionState(UserAction_t action) {
