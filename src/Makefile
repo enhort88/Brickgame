@@ -6,7 +6,7 @@ CFLAGS= -std=c11
 BINFLD=./bin
 BINTESTFLD=./bin_test
 DIROBJ=./obj
-DVISOURCE=$(BINFLD)/BrickGame_v1.0.tex
+DVISOURCE=./BrickGame_v1.0.tex
 LDFLAGS= -lncurses
 
 CPP_FILES := $(shell find . -name "*.cpp")
@@ -101,14 +101,6 @@ valgrind: tests
 	valgrind --trace-children=yes --track-fds=yes --track-origins=yes --leak-check=full --show-leak-kinds=all $(DIRFUNCTESTS)/afftrans_test 2>>valgrep.txt
 	
 	grep -e "Command" -e "jump" -e "Y: " valgrep.txt| grep -v "Y: 0" | cat
-
-genuicandmoc:
-	rm -f $(GUIFLD)/moc_mainwindow.cpp
-	rm -f $(GUIFLD)/ui_mainwindow.h
-	rm -f $(GUIFLD)/ui_settingsdialog.h
-	moc -o $(GUIFLD)/moc_mainwindow.cpp $(GUIFLD)/mainwindow.h
-	uic $(GUIFLD)/mainwindow.ui -o $(GUIFLD)/ui_mainwindow.h	
-	uic $(GUIFLD)/settingsdialog.ui -o $(GUIFLD)/ui_settingsdialog.h
 
 clean:
 	rm -f $(O_FILES)
