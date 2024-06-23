@@ -76,7 +76,7 @@ void initialize_game() {
   init_piece();  // Инициализация первой фигуры и следующей фигуры
 }
 
-void test_print(clock_t current_time, clock_t last_update_time, char ch) {
+void test_print(clock_t current_time, clock_t last_update_time) {
   Singleton *s = get_instance();
 
   mvprintw(19, 24, "Currtime: %ld", current_time);
