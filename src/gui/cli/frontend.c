@@ -29,7 +29,7 @@ void main_menu_init() {
         break;
       case 10:
         if (choice == 0) {
-          play_tetris();
+          play_tetris(0);
         } else if (choice == 1) {
           return;
         }
@@ -37,7 +37,7 @@ void main_menu_init() {
   }
 }
 
-void play_tetris() {
+void play_tetris(int ch) {
   clear();
   int menu_start_x = (WIDTH * 2) / 2 - 3;
   int menu_start_y = HEIGHT / 2 - 2 / 2;
@@ -54,11 +54,10 @@ void play_tetris() {
   mvprintw(menu_start_y + 7, menu_start_x +x_cooord, "Press \"Space\" for Action");
   mvprintw(menu_start_y + 9, menu_start_x +x_cooord, "Press \"Q\" for Quit");
 
-  int ch = 0;
+
   while (ch != 'S' && ch != 's') {
     ch = GET_USER_INPUT;
-    //  draw_key(ch);  // del
-  }
+    }
   tetris_start();
 }
 
