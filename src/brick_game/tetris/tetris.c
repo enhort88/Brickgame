@@ -54,31 +54,31 @@ int initialize_game() {
   }
   for (int i = 0; i < HEIGHT && !res; i++) {
     s->game.field[i] = (int *)calloc(WIDTH, sizeof(int));
-    if (!s->game.field[i] ) {
+    if (!s->game.field[i]) {
       perror("Failed to allocate memory for game.field[i]");
       res++;
     }
   }
-  if (!res){
-  s->game.next = (int **)calloc(4, sizeof(int *));
-  if (!s->game.next) {
-    perror("Failed to allocate memory for game.next");
-    res++;
-  }
-  for (int i = 0; i < 4 && !res; i++) {
-    s->game.next[i] = (int *)calloc(4, sizeof(int));
-    if (!s->game.next[i]) {
-      perror("Failed to allocate memory for game.next[i]");
+  if (!res) {
+    s->game.next = (int **)calloc(4, sizeof(int *));
+    if (!s->game.next) {
+      perror("Failed to allocate memory for game.next");
       res++;
     }
-  }
+    for (int i = 0; i < 4 && !res; i++) {
+      s->game.next[i] = (int *)calloc(4, sizeof(int));
+      if (!s->game.next[i]) {
+        perror("Failed to allocate memory for game.next[i]");
+        res++;
+      }
+    }
   }
   s->game.score = 0;
   s->game.high_score = read_high_score();
   s->game.level = 0;
   s->game.speed = 8000;
 
-  init_piece();  
+  init_piece();
   return res;
 }
 
@@ -123,4 +123,3 @@ void check_state() {
       break;
   }
 }
-

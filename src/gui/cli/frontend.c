@@ -46,16 +46,20 @@ int play_tetris(int ch) {
   draw_score(0, high_score, 0);
   int x_cooord = 17;
   mvprintw(menu_start_y, menu_start_x - 1, "Tetris game");
-  mvprintw(menu_start_y + 2, menu_start_x -5, "Press \"S\" for Start");
-  mvprintw(menu_start_y - 1, menu_start_x +x_cooord, "Press \"P\" for Pause");
-  mvprintw(menu_start_y + 1, menu_start_x +x_cooord, "Press \"Down\" for Down");
-  mvprintw(menu_start_y + 3, menu_start_x +x_cooord, "Press \"Left\" for Left");
-  mvprintw(menu_start_y + 5, menu_start_x +x_cooord, "Press \"Right\" for Right");
-  mvprintw(menu_start_y + 7, menu_start_x +x_cooord, "Press \"Space\" for Action");
-  mvprintw(menu_start_y + 9, menu_start_x +x_cooord, "Press \"Q\" for Quit");
+  mvprintw(menu_start_y + 2, menu_start_x - 5, "Press \"S\" for Start");
+  mvprintw(menu_start_y - 1, menu_start_x + x_cooord, "Press \"P\" for Pause");
+  mvprintw(menu_start_y + 1, menu_start_x + x_cooord,
+           "Press \"Down\" for Down");
+  mvprintw(menu_start_y + 3, menu_start_x + x_cooord,
+           "Press \"Left\" for Left");
+  mvprintw(menu_start_y + 5, menu_start_x + x_cooord,
+           "Press \"Right\" for Right");
+  mvprintw(menu_start_y + 7, menu_start_x + x_cooord,
+           "Press \"Space\" for Action");
+  mvprintw(menu_start_y + 9, menu_start_x + x_cooord, "Press \"Q\" for Quit");
   while (ch != 'S' && ch != 's') {
     ch = GET_USER_INPUT;
-    }
+  }
   return tetris_start();
 }
 
@@ -105,8 +109,8 @@ void draw_board() {
   }
 }
 void draw_next(GameInfo_t game) {
-  int base_x = WIDTH + 2;  
-  int base_y = 7;  
+  int base_x = WIDTH + 2;
+  int base_y = 7;
   mvprintw(6, 24, "Next:");
   for (int y = 0; y < 4; y++) {
     for (int x = 0; x < 4; x++) {
@@ -176,7 +180,7 @@ void game_over_menu() {
 int read_high_score() {
   FILE *file = fopen(HIGH_SCORE_FILE, "r");
   if (!file) {
-    return 0;  
+    return 0;
   }
 
   int high_score = 0;

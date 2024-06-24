@@ -227,7 +227,7 @@ void check_for_complete_lines() {
       break;
   }
 
-  s->state = SPAWN;  
+  s->state = SPAWN;
 }
 void clear_lines(int line) {
   Singleton *s = get_instance();

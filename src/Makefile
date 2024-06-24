@@ -66,21 +66,18 @@ $(STATICLIB):
 	rm -f *.o
 
 tests: $(STATICLIB)
-	$(CC) $(CFLAGS) -c $(BINFLD)/*.c $(GCOVFLAGS)
-	$(CC) $(CFLAGS) -c $(BINTESTFLD)/*.c
+	$(CC) $(CFLAGS) -c $(C_FILES) $(GCOVFLAGS)
 	mkdir -p $(DIROBJ)
 	mv -f *.o $(DIROBJ)
 	mkdir -p $(DIRFUNCTESTS)
-	$(CC) $(CFLAGS) $(DIROBJ)/objread_test.o $(DIROBJ)/objread.o $(STATICLIB) $(CHECKFLAGS) $(LDFLAGS) -o $(DIRFUNCTESTS)/objread_test
-	$(CC) $(CFLAGS) $(DIROBJ)/afftrans_test.o $(DIROBJ)/afftrans.o $(STATICLIB) $(CHECKFLAGS) $(LDFLAGS) -o $(DIRFUNCTESTS)/afftrans_test
+	$(CC) $(CFLAGS) $(DIROBJ)/s21_brickgame_test.o $(DIROBJ)/tetris.o $(DIROBJ)/frontend.o $(STATICLIB) $(CHECKFLAGS) $(LDFLAGS) -o $(DIRFUNCTESTS)/s21_brickgame_test
 
 run_tests:	
-	$(DIRFUNCTESTS)/objread_test
-	$(DIRFUNCTESTS)/afftrans_test
+	$(DIRFUNCTESTS)/s21_brickgame_test
 
 gcov_report: tests run_tests
 	mkdir -p $(DIRGCOV)
-	gcov $(BINFLD)/*.c -o ./
+	gcov $(C_FILES) -o ./
 	mv -f *.gcov $(DIRGCOV)
 	mv -f *.gcda $(DIRGCOV)
 	mv -f *.gcno $(DIRGCOV)
@@ -98,7 +95,6 @@ check:
 valgrind: tests
 	>valgrep.txt
 	valgrind --trace-children=yes --track-fds=yes --track-origins=yes --leak-check=full --show-leak-kinds=all $(DIRFUNCTESTS)/objread_test 2>>valgrep.txt
-	valgrind --trace-children=yes --track-fds=yes --track-origins=yes --leak-check=full --show-leak-kinds=all $(DIRFUNCTESTS)/afftrans_test 2>>valgrep.txt
 	
 	grep -e "Command" -e "jump" -e "Y: " valgrep.txt| grep -v "Y: 0" | cat
 

@@ -55,7 +55,7 @@ FSMState transitionMatrix[NUM_STATES][8] = {
                    [Start] = START}};
 
 void userInput(UserAction_t action, bool hold) {
-  (void) hold;
+  (void)hold;
   Singleton *s = get_instance();
   switch (action) {
     case Left:
