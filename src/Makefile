@@ -8,15 +8,18 @@ BINTESTFLD=./bin_test
 DIROBJ=./obj
 DVISOURCE=./BrickGame_v1.0.tex
 LDFLAGS= -lncurses
+DIRTET = ./brick_game/tetris
+DIRGUI = ./gui/cli
 
 CPP_FILES := $(shell find . -name "*.cpp")
 C_FILES := $(shell find . -name "*.c")
 H_FILES := $(shell find . -name "*.h")
 O_FILES := $(shell find . -name "*.o")
 
+
 OS=$(shell uname -s)
 ifeq ($(OS),Linux)
-CHECKFLAGS=-lcheck -lgcov --coverage -lsubunit -lrt -lpthread
+CHECKFLAGS=-lcheck -lgcov --coverage -lsubunit -lrt -lpthread -lm
 endif
 ifeq ($(OS),Darwin)
 CHECKFLAGS=-lcheck -lgcov --coverage
@@ -24,7 +27,8 @@ endif
 
 GCOVFLAGS=-fprofile-arcs -ftest-coverage
 STATICLIB=BrickGame_v1.0.a
-DIRFUNCTESTS=./tests
+DIRTESTS=./tests
+DIRFUNCTESTS=./functions_tests
 DIRGCOV=./gcov
 DIRGENHTML=./genhtml
 APPNAME=BrickGame_v1.0
@@ -33,9 +37,14 @@ DIRDIST=./dist
 
 all: install dvi
 
+$(STATICLIB):
+	$(CC) $(CFLAGS) -c $(DIRTET)/*.c $(DIRGUI)/*.c
+	ar r $(STATICLIB) *.o
+	rm -f *.o
+
 install: 
 	mkdir -p $(DIRBUILD)
-	$(CC) -c $(CFLAGS) $(C_FILES)
+	$(CC) -c $(CFLAGS) $(DIRTET)/*.c $(DIRGUI)/*.c main.c
 	$(CC) ./*.o -o $(DIRBUILD)/$(APPNAME) $(LDFLAGS)
 	touch $(DIRBUILD)/highscore.txt
 	rm -f *.o
@@ -45,7 +54,7 @@ uninstall:
 
 dvi:
 	mkdir -p $(DIRBUILD)
-	xelatex -output-directory=$(DIRBUILD) $(DVISOURCE)
+	xelatex -output-directory=$(DIRBUILD) ./materials/$(DVISOURCE)
 	rm -f $(DIRBUILD)/*.log 
 	rm -f $(DIRBUILD)/*.aux
 
@@ -60,24 +69,21 @@ dist: $(STATICLIB) all
 	rm $(DIRDIST)/$(STATICLIB)
 	rm -drf $(DIRBUILD)
 
-$(STATICLIB):
-	$(CC) $(CFLAGS) -c $(C_FILES) 
-	ar r $(STATICLIB) *.o
-	rm -f *.o
 
-tests: $(STATICLIB)
-	$(CC) $(CFLAGS) -c $(C_FILES) $(GCOVFLAGS)
+tests: 	$(STATICLIB)
+	$(CC) $(CFLAGS) -c $(DIRTET)/*.c $(GCOVFLAGS)
+	$(CC) $(CFLAGS) -c $(DIRFUNCTESTS)/*.c
 	mkdir -p $(DIROBJ)
 	mv -f *.o $(DIROBJ)
-	mkdir -p $(DIRFUNCTESTS)
-	$(CC) $(CFLAGS) $(DIROBJ)/s21_brickgame_test.o $(DIROBJ)/tetris.o $(DIROBJ)/frontend.o $(STATICLIB) $(CHECKFLAGS) $(LDFLAGS) -o $(DIRFUNCTESTS)/s21_brickgame_test
+	mkdir -p $(DIRTESTS)
+	$(CC) $(CFLAGS) $(DIROBJ)/*.o $(STATICLIB) $(CHECKFLAGS) $(LDFLAGS) -o $(DIRTESTS)/s21_brickgame_test 
 
 run_tests:	
-	$(DIRFUNCTESTS)/s21_brickgame_test
+	$(DIRTESTS)/s21_brickgame_test
 
 gcov_report: tests run_tests
 	mkdir -p $(DIRGCOV)
-	gcov $(C_FILES) -o ./
+	gcov $(DIRTET)/*.c $(DIRGUI)/*.c -o ./
 	mv -f *.gcov $(DIRGCOV)
 	mv -f *.gcda $(DIRGCOV)
 	mv -f *.gcno $(DIRGCOV)
@@ -106,7 +112,7 @@ clean:
 	rm -f ./*.log 
 	rm -f ./*.info
 	rm -f ./*.txt
-	rm -drf $(DIRFUNCTESTS)
+	rm -drf $(DIRTESTS)
 	rm -drf $(DIRGCOV)
 	rm -drf $(DIRGENHTML)
 	rm -drf $(DIRDIST)

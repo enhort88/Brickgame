@@ -85,7 +85,7 @@ void userInput(UserAction_t action, bool hold) {
     case Start:
       free_game_resources();
       free_singleton();
-      tetris_start();
+      tetris_start(0);
       break;
     case Terminate:
       s->state = GAME_OVER;
@@ -94,9 +94,13 @@ void userInput(UserAction_t action, bool hold) {
 }
 
 UserAction_t keyboard_action(int *ch, int *pocket, bool *hold) {
+    Singleton * s=  get_instance();
+
   *ch = GET_USER_INPUT;
   *hold = (*pocket == *ch) ? true : false;
   *pocket = *ch;
+  if (s->test==1) {*ch = KEY_DOWN;
+  s->game.speed=0;}
   switch (*ch) {
     case KEY_LEFT:
       return Left;
@@ -115,7 +119,7 @@ UserAction_t keyboard_action(int *ch, int *pocket, bool *hold) {
     case 'q':
       return Terminate;
     default:
-      return -1;
+      return ERR;
   }
 }
 

@@ -10,6 +10,7 @@ typedef struct {
     Piece current_piece;
     UserAction_t action;
     int shape_curr;
+    int test;
 } Singleton;
 
 Singleton* get_instance();

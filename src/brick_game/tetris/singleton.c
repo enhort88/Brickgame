@@ -12,6 +12,7 @@ Singleton *get_instance() {
     instance->current_piece = (Piece){0};
     instance->action = 7;
     instance->shape_curr = -1;
+    instance->test = 0;
   }
   return instance;
 }

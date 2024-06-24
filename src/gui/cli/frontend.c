@@ -1,6 +1,7 @@
 #include "frontend.h"
 
 void main_menu_init() {
+  
   clear();
   draw_board();
   int high_score = read_high_score();
@@ -29,7 +30,7 @@ void main_menu_init() {
         break;
       case 10:
         if (choice == 0) {
-          play_tetris(0);
+          play_tetris(1);
         } else if (choice == 1) {
           return;
         }
@@ -37,31 +38,7 @@ void main_menu_init() {
   }
 }
 
-int play_tetris(int ch) {
-  clear();
-  int menu_start_x = (WIDTH * 2) / 2 - 3;
-  int menu_start_y = HEIGHT / 2 - 2 / 2;
-  draw_board();
-  int high_score = read_high_score();
-  draw_score(0, high_score, 0);
-  int x_cooord = 17;
-  mvprintw(menu_start_y, menu_start_x - 1, "Tetris game");
-  mvprintw(menu_start_y + 2, menu_start_x - 5, "Press \"S\" for Start");
-  mvprintw(menu_start_y - 1, menu_start_x + x_cooord, "Press \"P\" for Pause");
-  mvprintw(menu_start_y + 1, menu_start_x + x_cooord,
-           "Press \"Down\" for Down");
-  mvprintw(menu_start_y + 3, menu_start_x + x_cooord,
-           "Press \"Left\" for Left");
-  mvprintw(menu_start_y + 5, menu_start_x + x_cooord,
-           "Press \"Right\" for Right");
-  mvprintw(menu_start_y + 7, menu_start_x + x_cooord,
-           "Press \"Space\" for Action");
-  mvprintw(menu_start_y + 9, menu_start_x + x_cooord, "Press \"Q\" for Quit");
-  while (ch != 'S' && ch != 's') {
-    ch = GET_USER_INPUT;
-  }
-  return tetris_start();
-}
+
 
 void update_field(GameInfo_t game) {
   Singleton *s = get_instance();
@@ -132,32 +109,12 @@ void draw_piece(Piece piece) {
   }
   refresh();
 }
-void free_game_resources() {
-  Singleton *s = get_instance();
-  if (s->game.field != NULL) {
-    for (int i = 0; i < HEIGHT; i++) {
-      if (s->game.field[i] != NULL) {
-        free(s->game.field[i]);
-      }
-    }
-    free(s->game.field);
-    s->game.field = NULL;
-  }
-  if (s->game.next != NULL) {
-    for (int i = 0; i < 4; i++) {
-      if (s->game.next[i] != NULL) {
-        free(s->game.next[i]);
-      }
-    }
-    free(s->game.next);
-    s->game.next = NULL;
-  }
-}
-void draw_key(char ch) {
-  int info_start_x = WIDTH * 2 + 4;
-  if (ch != -1) mvprintw(8, info_start_x, "CHAR:%c INT %d", ch, ch);
-  refresh();
-}
+
+// void draw_key(char ch) {
+//   int info_start_x = WIDTH * 2 + 4;
+//   if (ch != -1) mvprintw(8, info_start_x, "CHAR:%c INT %d", ch, ch);
+//   refresh();
+// }
 void game_over_menu() {
   clear();
   int menu_start_x = (WIDTH * 2) / 2 - 3;

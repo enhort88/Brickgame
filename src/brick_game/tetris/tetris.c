@@ -11,7 +11,6 @@ int tetris_start() {
   int pocket = '\0';
   bool hold = false;
   clock_t last_update_time = clock();
-
   nodelay(stdscr, TRUE);
   while (s->state != GAME_OVER) {
     change_speed();
@@ -22,14 +21,17 @@ int tetris_start() {
       }
       last_update_time = current_time;
     }
+
     userInput(keyboard_action(&ch, &pocket, &hold), hold);
-    //  test_print(current_time, last_update_time, ch);  // del after all
+  //    test_print(current_time, last_update_time);  // del after all
     refresh();
+    if (s->test==1) s->state=GAME_OVER;
   }
   nodelay(stdscr, FALSE);
   free_game_resources();
   free_singleton();
-  game_over_menu();
+  if (s->test!=1){
+  game_over_menu();}
   return res;
 }
 
@@ -121,5 +123,53 @@ void check_state() {
       break;
     default:
       break;
+  }
+}
+int play_tetris(int ch) {
+  Singleton * s =get_instance();
+  s->test = (ch == 1) ? 0 : 1;
+  clear();
+  int menu_start_x = (WIDTH * 2) / 2 - 3;
+  int menu_start_y = HEIGHT / 2 - 2 / 2;
+  draw_board();
+  int high_score = read_high_score();
+  draw_score(0, high_score, 0);
+  int x_cooord = 17;
+  mvprintw(menu_start_y, menu_start_x - 1, "Tetris game");
+  mvprintw(menu_start_y + 2, menu_start_x - 5, "Press \"S\" for Start");
+  mvprintw(menu_start_y - 1, menu_start_x + x_cooord, "Press \"P\" for Pause");
+  mvprintw(menu_start_y + 1, menu_start_x + x_cooord,
+           "Press \"Down\" for Down");
+  mvprintw(menu_start_y + 3, menu_start_x + x_cooord,
+           "Press \"Left\" for Left");
+  mvprintw(menu_start_y + 5, menu_start_x + x_cooord,
+           "Press \"Right\" for Right");
+  mvprintw(menu_start_y + 7, menu_start_x + x_cooord,
+           "Press \"Space\" for Action");
+  mvprintw(menu_start_y + 9, menu_start_x + x_cooord, "Press \"Q\" for Quit");
+  while (ch != 'S' && ch != 's') {
+    ch = GET_USER_INPUT;
+  }
+  return tetris_start();
+}
+void free_game_resources() {
+  Singleton *s = get_instance();
+  if (s->game.field != NULL) {
+    for (int i = 0; i < HEIGHT; i++) {
+      if (s->game.field[i] != NULL) {
+        free(s->game.field[i]);
+      }
+    }
+    free(s->game.field);
+    s->game.field = NULL;
+  }
+  if (s->game.next != NULL) {
+    for (int i = 0; i < 4; i++) {
+      if (s->game.next[i] != NULL) {
+        free(s->game.next[i]);
+      }
+    }
+    free(s->game.next);
+    s->game.next = NULL;
   }
 }

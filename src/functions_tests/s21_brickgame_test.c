@@ -1,6 +1,7 @@
 #include"s21_brickgame_test.h"
 
 START_TEST(s21_brick_game_test_1) {
+  
   int res = play_tetris('S');
   ck_assert_int_eq(0, res);
 }
