@@ -15,6 +15,7 @@
 #define SHAPE_J {{1, 1, 1, 0}, {0, 0, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 #define SHAPES {SHAPE_I, SHAPE_O, SHAPE_T, SHAPE_Z, SHAPE_S, SHAPE_L, SHAPE_J}
 
+void change_speed();
 void init_piece();
 void reset_game();
 void spawn_piece();
@@ -31,6 +32,7 @@ bool check_collision();
 bool check_collision_end_game();
 void attach_piece_to_field();
 void check_for_complete_lines();
+
 
 
 

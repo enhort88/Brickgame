@@ -2,10 +2,11 @@
 
 #include "../../gui/cli/frontend.h"
 
-void tetris_start() {
+int tetris_start() {
+  int res = 0;
   Singleton *s = get_instance();
   s->state = SPAWN;
-  initialize_game();
+  res = initialize_game();
   int ch = '\0';
   int pocket = '\0';
   bool hold = false;
@@ -29,6 +30,7 @@ void tetris_start() {
   free_game_resources();
   free_singleton();
   game_over_menu();
+  return res;
 }
 
 GameInfo_t updateCurrentState() {
@@ -42,52 +44,56 @@ GameInfo_t updateCurrentState() {
   return s->game;
 }
 
-void initialize_game() {
+int initialize_game() {
+  int res = 0;
   Singleton *s = get_instance();
   s->game.field = (int **)calloc(HEIGHT, sizeof(int *));
   if (!s->game.field) {
     perror("Failed to allocate memory for game.field");
-    exit(EXIT_FAILURE);
+    res++;
   }
-  for (int i = 0; i < HEIGHT; i++) {
+  for (int i = 0; i < HEIGHT && !res; i++) {
     s->game.field[i] = (int *)calloc(WIDTH, sizeof(int));
-    if (!s->game.field[i]) {
+    if (!s->game.field[i] ) {
       perror("Failed to allocate memory for game.field[i]");
-      exit(EXIT_FAILURE);
+      res++;
     }
   }
+  if (!res){
   s->game.next = (int **)calloc(4, sizeof(int *));
   if (!s->game.next) {
     perror("Failed to allocate memory for game.next");
-    exit(EXIT_FAILURE);
+    res++;
   }
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 4 && !res; i++) {
     s->game.next[i] = (int *)calloc(4, sizeof(int));
     if (!s->game.next[i]) {
       perror("Failed to allocate memory for game.next[i]");
-      exit(EXIT_FAILURE);
+      res++;
     }
+  }
   }
   s->game.score = 0;
   s->game.high_score = read_high_score();
   s->game.level = 0;
   s->game.speed = 8000;
 
-  init_piece();  // Инициализация первой фигуры и следующей фигуры
+  init_piece();  
+  return res;
 }
 
-void test_print(clock_t current_time, clock_t last_update_time) {
-  Singleton *s = get_instance();
+// void test_print(clock_t current_time, clock_t last_update_time) {
+//   Singleton *s = get_instance();
 
-  mvprintw(19, 24, "Currtime: %ld", current_time);
-  mvprintw(20, 24, "LastUpT: %ld", last_update_time);
-  mvprintw(21, 24, "RES: %ld",
-           (current_time - last_update_time) * 10000 / CLOCKS_PER_SEC);
-  mvprintw(10, 24, "ACTION:%s\tSTATE:%s", getActionName(s->action),
-           getStateName(s->state));
-  //  draw_key(ch);  // del
-  refresh();
-}
+//   mvprintw(19, 24, "Currtime: %ld", current_time);
+//   mvprintw(20, 24, "LastUpT: %ld", last_update_time);
+//   mvprintw(21, 24, "RES: %ld",
+//            (current_time - last_update_time) * 10000 / CLOCKS_PER_SEC);
+//   mvprintw(10, 24, "ACTION:%s\tSTATE:%s", getActionName(s->action),
+//            getStateName(s->state));
+//   //  draw_key(ch);  // del
+//   refresh();
+// }
 
 bool tet_timer(clock_t *current_time, clock_t *last_update_time, int speed) {
   return (((*current_time - *last_update_time) * 10000 / CLOCKS_PER_SEC) >=
@@ -117,22 +123,4 @@ void check_state() {
       break;
   }
 }
-void change_speed() {
-  Singleton *s = get_instance();
 
-  // Массивы для хранения значений скорости и уровней
-  int speed_levels[] = {7200, 6400, 5600, 4800, 4000,
-                        3200, 2400, 1600, 800,  200};
-  int score_thresholds[] = {600,  1200, 1800, 2400, 3000,
-                            3600, 4200, 4800, 5400, 6000};
-  int num_levels = sizeof(speed_levels) / sizeof(speed_levels[0]);
-
-  // Поиск соответствующего уровня и скорости на основе текущего счета
-  for (int i = num_levels - 1; i >= 0; i--) {
-    if (s->game.score >= score_thresholds[i]) {
-      s->game.speed = speed_levels[i];
-      s->game.level = i + 1;
-      break;
-    }
-  }
-}

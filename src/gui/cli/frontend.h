@@ -8,7 +8,7 @@
 #define WIDTH 10
 #define HEIGHT 20
 
-void play_tetris(int ch);
+int play_tetris(int ch);
 
 
 void main_menu_init();

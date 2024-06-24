@@ -69,21 +69,18 @@ void rotate_piece() {
   Singleton *s = get_instance();
   if (s->state == MOVING && s->current_piece.type != 1) {
     int temp_shape[4][4] = {0};
-
     // Транспонируем матрицу
     for (int y = 0; y < 4; y++) {
       for (int x = 0; x < 4; x++) {
         temp_shape[x][y] = s->current_piece.shape[y][x];
       }
     }
-
     // Отражаем матрицу по вертикали
     for (int y = 0; y < 4; y++) {
       for (int x = 0; x < 4; x++) {
         s->current_piece.shape[x][y] = temp_shape[x][3 - y];
       }
     }
-
     // Проверка коллизий
     if (check_collision()) {
       // Попробуем сдвинуть фигуру, чтобы она не застревала в стене
@@ -100,7 +97,6 @@ void rotate_piece() {
           s->current_piece.y -= dy;
         }
       }
-
       // Если не удалось избежать коллизий, проверим границы и скорректируем
       if (collision) {
         // Корректируем положение фигуры относительно границ поля
@@ -119,7 +115,6 @@ void rotate_piece() {
             }
           }
         }
-
         // Повторная проверка коллизий после корректировки
         if (check_collision()) {
           // Попробуем переместить фигуру только по горизонтали
@@ -131,7 +126,6 @@ void rotate_piece() {
             }
             s->current_piece.x -= dx;
           }
-
           // Если все еще не удалось избежать коллизий, отменяем поворот
           if (collision) {
             for (int y = 0; y < 4; y++) {
@@ -216,8 +210,6 @@ void check_for_complete_lines() {
             // строкой выше
     }
   }
-
-  // Начисление очков в зависимости от количества очищенных линий
   switch (lines_cleared) {
     case 1:
       s->game.score += 100;
@@ -235,7 +227,7 @@ void check_for_complete_lines() {
       break;
   }
 
-  s->state = SPAWN;  // Смена состояния после проверки линий
+  s->state = SPAWN;  
 }
 void clear_lines(int line) {
   Singleton *s = get_instance();
@@ -246,5 +238,20 @@ void clear_lines(int line) {
   }
   for (int x = 0; x < WIDTH; x++) {
     s->game.field[0][x] = 0;
+  }
+}
+void change_speed() {
+  Singleton *s = get_instance();
+  int speed_levels[] = {7200, 6400, 5600, 4800, 4000,
+                        3200, 2400, 1600, 800,  200};
+  int score_thresholds[] = {600,  1200, 1800, 2400, 3000,
+                            3600, 4200, 4800, 5400, 6000};
+  int num_levels = sizeof(speed_levels) / sizeof(speed_levels[0]);
+  for (int i = num_levels - 1; i >= 0; i--) {
+    if (s->game.score >= score_thresholds[i]) {
+      s->game.speed = speed_levels[i];
+      s->game.level = i + 1;
+      break;
+    }
   }
 }

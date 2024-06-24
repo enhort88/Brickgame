@@ -37,7 +37,7 @@ void main_menu_init() {
   }
 }
 
-void play_tetris(int ch) {
+int play_tetris(int ch) {
   clear();
   int menu_start_x = (WIDTH * 2) / 2 - 3;
   int menu_start_y = HEIGHT / 2 - 2 / 2;
@@ -53,12 +53,10 @@ void play_tetris(int ch) {
   mvprintw(menu_start_y + 5, menu_start_x +x_cooord, "Press \"Right\" for Right");
   mvprintw(menu_start_y + 7, menu_start_x +x_cooord, "Press \"Space\" for Action");
   mvprintw(menu_start_y + 9, menu_start_x +x_cooord, "Press \"Q\" for Quit");
-
-
   while (ch != 'S' && ch != 's') {
     ch = GET_USER_INPUT;
     }
-  tetris_start();
+  return tetris_start();
 }
 
 void update_field(GameInfo_t game) {
@@ -76,7 +74,6 @@ void update_field(GameInfo_t game) {
   refresh();
 }
 void draw_field(GameInfo_t game_curr) {
-  //  if (game.field)
   for (int y = 0; y < HEIGHT; y++) {
     for (int x = 0; x < WIDTH; x++) {
       if (game_curr.field[y][x] == 0) {
@@ -86,19 +83,11 @@ void draw_field(GameInfo_t game_curr) {
       }
     }
   }
-  // else
-  // for (int y = 0; y < HEIGHT; y++) {
-  //       for (int x = 0; x < WIDTH; x++) {
-  //           mvprintw(y + 1, x * 2 + 1, ".");
-  //       }
-  //   }
   refresh();
 }
 
 void draw_score(int score, int high_score, int level) {
-  // Singleton* s = get_instance();
   int info_start_x = WIDTH * 2 + 4;
-  // if (high_score < score) high_score = score;
   mvprintw(0, info_start_x, "High Score:%d", high_score);
   mvprintw(2, info_start_x, "Score:%d", score);
   mvprintw(4, info_start_x, "Level:%d", level);
@@ -116,11 +105,8 @@ void draw_board() {
   }
 }
 void draw_next(GameInfo_t game) {
-  int base_x = WIDTH + 2;  // Пример координаты x для отображения следующей
-                           // фигуры (справа от игрового поля)
-  int base_y = 7;  // Пример координаты y для отображения следующей фигуры
-                   // (вверху экрана)
-
+  int base_x = WIDTH + 2;  
+  int base_y = 7;  
   mvprintw(6, 24, "Next:");
   for (int y = 0; y < 4; y++) {
     for (int x = 0; x < 4; x++) {
@@ -190,7 +176,7 @@ void game_over_menu() {
 int read_high_score() {
   FILE *file = fopen(HIGH_SCORE_FILE, "r");
   if (!file) {
-    return 0;  // Если файл не найден, вернуть 0
+    return 0;  
   }
 
   int high_score = 0;
