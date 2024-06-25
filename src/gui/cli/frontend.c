@@ -135,16 +135,15 @@ void game_over_menu() {
 }
 
 int read_high_score() {
+  int res = 0;
   FILE *file = fopen(HIGH_SCORE_FILE, "r");
   if (!file) {
-    return 0;
+    res = 0;
+  } else {
+    fscanf(file, "%d", &res);
+    fclose(file);
   }
-
-  int high_score = 0;
-  fscanf(file, "%d", &high_score);
-  fclose(file);
-
-  return high_score;
+  return res;
 }
 
 void write_high_score(int high_score) {
