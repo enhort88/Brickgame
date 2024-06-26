@@ -3,7 +3,9 @@
 
 #include <check.h>
 
-#include "../brick_game/tetris/tetris.h"
+#include "../brick_game/tetris/backend.h"
 #include "../gui/cli/frontend.h"
 
+ 
+void initialize_piece(Piece *piece);
 #endif  // SRC_S21_BRICK_TEST_H_

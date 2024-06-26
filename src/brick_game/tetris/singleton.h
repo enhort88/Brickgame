@@ -3,7 +3,6 @@
 
 #include "structures.h"
 
-
 typedef struct {
     GameInfo_t game;
     FSMState state;

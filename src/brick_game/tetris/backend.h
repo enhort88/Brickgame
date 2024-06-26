@@ -1,24 +1,30 @@
 #ifndef BACKEND_H
 #define BACKEND_H
 
-#include "tetris.h"
-#include <string.h>
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
 #include <time.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
-#define SHAPE_I {{1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
-#define SHAPE_O {{1, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
-#define SHAPE_T {{1, 1, 1, 0}, {0, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
-#define SHAPE_Z {{1, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
-#define SHAPE_S {{0, 1, 1, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
-#define SHAPE_L {{1, 1, 1, 0}, {1, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
-#define SHAPE_J {{1, 1, 1, 0}, {0, 0, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
-#define SHAPES {SHAPE_I, SHAPE_O, SHAPE_T, SHAPE_Z, SHAPE_S, SHAPE_L, SHAPE_J}
+#include <ncurses.h>
+#include "structures.h"
+
+int play_tetris(int ch);
+int tetris_start();
+GameInfo_t updateCurrentState();
+int initialize_game();
+
+bool tet_timer(clock_t *current_time, clock_t *last_update_time, int speed);
+void free_game_resources();
+
+UserAction_t keyboard_action(int *ch, int *pocket, bool *hold, bool test);
+void userInput(UserAction_t action, bool hold);
 
 void change_speed();
 void init_piece();
-void reset_game();
-void spawn_piece();
+
 void move_piece_down();
 
 void move_piece_left();
@@ -32,8 +38,4 @@ bool check_collision();
 bool check_collision_end_game();
 void attach_piece_to_field();
 void check_for_complete_lines();
-
-
-
-
-#endif
+#endif // BACKEND_H

@@ -38,8 +38,6 @@ void main_menu_init() {
   }
 }
 
-
-
 void update_field(GameInfo_t game) {
   Singleton *s = get_instance();
   clear();
@@ -110,11 +108,6 @@ void draw_piece(Piece piece) {
   refresh();
 }
 
-// void draw_key(char ch) {
-//   int info_start_x = WIDTH * 2 + 4;
-//   if (ch != -1) mvprintw(8, info_start_x, "CHAR:%c INT %d", ch, ch);
-//   refresh();
-// }
 void game_over_menu() {
   clear();
   int menu_start_x = (WIDTH * 2) / 2 - 3;
@@ -135,15 +128,16 @@ void game_over_menu() {
 }
 
 int read_high_score() {
-  int res = 0;
   FILE *file = fopen(HIGH_SCORE_FILE, "r");
   if (!file) {
-    res = 0;
-  } else {
-    fscanf(file, "%d", &res);
-    fclose(file);
+    return 0;
   }
-  return res;
+
+  int high_score = 0;
+  fscanf(file, "%d", &high_score);
+  fclose(file);
+
+  return high_score;
 }
 
 void write_high_score(int high_score) {
