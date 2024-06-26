@@ -33,6 +33,7 @@ void move_piece_up();
 void rotate_piece();
 
 void clear_lines(int line);
+int lines_cleared_score(int lines_cleared);
 
 bool check_collision();
 bool check_collision_end_game();

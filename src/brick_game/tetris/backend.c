@@ -53,6 +53,40 @@ static FSMState transitionMatrix[NUM_STATES][8] = {
                    [Start] = START}};
 
 
+int play_tetris(int ch) {
+  Singleton * s =get_instance();
+  s->test = (ch == 1) ? 0 : 1;
+  clear();
+  int menu_start_x = (WIDTH * 2) / 2 - 3;
+  int menu_start_y = HEIGHT / 2 - 2 / 2;
+  draw_board();
+  int high_score = read_high_score();
+  draw_score(0, high_score, 0);
+  int x_cooord = 17;
+  mvprintw(menu_start_y, menu_start_x - 1, "Tetris game");
+  mvprintw(menu_start_y + 2, menu_start_x - 5, "Press \"S\" for Start");
+  mvprintw(menu_start_y - 1, menu_start_x + x_cooord, "Press \"P\" for Pause");
+  mvprintw(menu_start_y + 1, menu_start_x + x_cooord,
+           "Press \"Down\" for Down");
+  mvprintw(menu_start_y + 3, menu_start_x + x_cooord,
+           "Press \"Left\" for Left");
+  mvprintw(menu_start_y + 5, menu_start_x + x_cooord,
+           "Press \"Right\" for Right");
+  mvprintw(menu_start_y + 7, menu_start_x + x_cooord,
+           "Press \"Space\" for Action");
+  mvprintw(menu_start_y + 9, menu_start_x + x_cooord, "Press \"Q\" for Quit");
+  while (ch != 'S' && ch != 's') {
+    ch = GET_USER_INPUT;
+  }
+  int res = tetris_start();
+  if (s->test!=1){
+  game_over_menu();
+ }
+  free_game_resources();
+  free_singleton();
+  return res;
+}
+
 int tetris_start() {
   int res = 0;
   Singleton *s = get_instance();
@@ -73,15 +107,10 @@ int tetris_start() {
       last_update_time = current_time;
     }
     userInput(keyboard_action(&ch, &pocket, &hold, false), hold);
-  //    test_print(current_time, last_update_time);  // del after all
     refresh();
     if (s->test==1) s->state=GAME_OVER;
   }
   nodelay(stdscr, FALSE);
-  free_game_resources();
-  free_singleton();
-  if (s->test!=1){
-  game_over_menu();}
   return res;
 }
 
@@ -161,33 +190,7 @@ bool tet_timer(clock_t *current_time, clock_t *last_update_time, int speed) {
           speed);
 }
 
-int play_tetris(int ch) {
-  Singleton * s =get_instance();
-  s->test = (ch == 1) ? 0 : 1;
-  clear();
-  int menu_start_x = (WIDTH * 2) / 2 - 3;
-  int menu_start_y = HEIGHT / 2 - 2 / 2;
-  draw_board();
-  int high_score = read_high_score();
-  draw_score(0, high_score, 0);
-  int x_cooord = 17;
-  mvprintw(menu_start_y, menu_start_x - 1, "Tetris game");
-  mvprintw(menu_start_y + 2, menu_start_x - 5, "Press \"S\" for Start");
-  mvprintw(menu_start_y - 1, menu_start_x + x_cooord, "Press \"P\" for Pause");
-  mvprintw(menu_start_y + 1, menu_start_x + x_cooord,
-           "Press \"Down\" for Down");
-  mvprintw(menu_start_y + 3, menu_start_x + x_cooord,
-           "Press \"Left\" for Left");
-  mvprintw(menu_start_y + 5, menu_start_x + x_cooord,
-           "Press \"Right\" for Right");
-  mvprintw(menu_start_y + 7, menu_start_x + x_cooord,
-           "Press \"Space\" for Action");
-  mvprintw(menu_start_y + 9, menu_start_x + x_cooord, "Press \"Q\" for Quit");
-  while (ch != 'S' && ch != 's') {
-    ch = GET_USER_INPUT;
-  }
-  return tetris_start();
-}
+
 void free_game_resources() {
   Singleton *s = get_instance();
   if (s->game.field != NULL) {
@@ -411,24 +414,28 @@ void check_for_complete_lines() {
             // строкой выше
     }
   }
-  switch (lines_cleared) {
-    case 1:
-      s->game.score += 100;
-      break;
-    case 2:
-      s->game.score += 300;
-      break;
-    case 3:
-      s->game.score += 700;
-      break;
-    case 4:
-      s->game.score += 1500;
-      break;
-    default:
-      break;
-  }
+  s->game.score += lines_cleared_score(lines_cleared);
   s->state = SPAWN;
 }
+int lines_cleared_score(int lines_cleared){
+    switch (lines_cleared) {
+    case 1:
+     return 100;
+      break;
+    case 2:
+      return 300;
+      break;
+    case 3:
+      return 700;
+      break;
+    case 4:
+      return 1500;
+      break;
+    default:
+      return 0;
+  }
+}
+
 void clear_lines(int line) {
   Singleton *s = get_instance();
   for (int y = line; y > 0; y--) {

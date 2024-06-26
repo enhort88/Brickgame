@@ -60,6 +60,7 @@ Singleton *s = get_instance();
 END_TEST
 
 START_TEST(s21_brick_game_test_6) {
+  
     GameInfo_t game_info = updateCurrentState();
   ck_assert_int_eq(game_info.score, 0);
 }
@@ -72,7 +73,15 @@ END_TEST
 
 
 START_TEST(s21_brick_game_test_8) {
-
+Singleton * s= get_instance();
+initialize_game();
+s->state = SPAWN;
+      GameInfo_t game_info = updateCurrentState();
+s->state = MOVING;
+      game_info = updateCurrentState();
+s->state = ATTACHING;
+      game_info = updateCurrentState();
+  ck_assert_int_eq(game_info.score, 0);
   
 }
 END_TEST
@@ -101,10 +110,28 @@ START_TEST(s21_brick_game_test_13) {
   s->action = Left;
   int res = play_tetris('S');
   ck_assert_int_eq(0, res);
-  // Assuming userInput has internal state changes or outputs to verify
 }
 END_TEST
+START_TEST(s21_brick_game_test_14) {
+  Singleton * s = get_instance();
+  initialize_game();
+userInput(Left, false);
+userInput(Right, false);
+s->state = MOVING;
+userInput(Down, false);
+userInput(Up, false);
+userInput(Action, false);
+userInput(Pause, false);
+userInput(Terminate, false);
+}
 END_TEST
+START_TEST(s21_brick_game_test_15) {
+//  Singleton * s = get_instance();
+initialize_game();
+clear_lines(4);
+}
+END_TEST
+
 
 
 Suite *suite(void) {
@@ -124,6 +151,8 @@ Suite *suite(void) {
   tcase_add_test(tcase, s21_brick_game_test_11);
   tcase_add_test(tcase, s21_brick_game_test_12);
   tcase_add_test(tcase, s21_brick_game_test_13);
+  tcase_add_test(tcase, s21_brick_game_test_14);
+  tcase_add_test(tcase, s21_brick_game_test_15);
   
 
   suite_add_tcase(suite, tcase);
@@ -140,7 +169,8 @@ void case_test_runner(Suite *suite, int *fail_count) {
 int main(void) {
   int fail_count = 0;
   case_test_runner(suite(), &fail_count);
-
+  free_game_resources();
+  free_singleton();
   return fail_count;
 }
 

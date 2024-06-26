@@ -118,13 +118,13 @@ void game_over_menu() {
   mvprintw(menu_start_y, menu_start_x - 1, "GAME OVER");
   mvprintw(menu_start_y + 1, menu_start_x - 2, "Press \"Space\"");
   int ch = 0;
-  while (ch != 32 && ch != 32) {
+  while (ch != 32) {
     ch = GET_USER_INPUT;
   }
   clear();
   draw_board();
   draw_score(0, high_score, 0);
-  return;
+  
 }
 
 int read_high_score() {
