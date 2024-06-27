@@ -491,9 +491,10 @@ void userInput(UserAction_t action, bool hold) {
       s->game.pause = !(s->game.pause);
       break;
     case Start:
+      if (s->state==GAME_OVER){
       free_game_resources();
       free_singleton();
-      tetris_start();
+      tetris_start();}
       break;
     case Terminate:
       s->state = GAME_OVER;

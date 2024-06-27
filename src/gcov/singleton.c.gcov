@@ -1,0 +1,25 @@
+        -:    0:Source:brick_game/tetris/singleton.c
+        -:    1:#include "singleton.h"
+        -:    2:
+        -:    3:#include <stdlib.h>
+        -:    4:
+        -:    5:static Singleton *instance = NULL;
+        -:    6:
+      126:    7:Singleton *get_instance() {
+      126:    8:  if (instance == NULL) {
+       17:    9:    instance = (Singleton *)malloc(sizeof(Singleton));
+       17:   10:    instance->game = (GameInfo_t){0};
+       17:   11:    instance->state = START;
+       17:   12:    instance->current_piece = (Piece){0};
+       17:   13:    instance->action = 7;
+       17:   14:    instance->shape_curr = -1;
+       17:   15:    instance->test = 0;
+        -:   16:  }
+      126:   17:  return instance;
+        -:   18:}
+        3:   19:void free_singleton() {
+        3:   20:  if (instance != NULL) {
+        3:   21:    free(instance);
+        3:   22:    instance = NULL;
+        -:   23:  }
+        3:   24:}

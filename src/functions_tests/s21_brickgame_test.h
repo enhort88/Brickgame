@@ -7,5 +7,5 @@
 #include "../gui/cli/frontend.h"
 
  
-void initialize_piece(Piece *piece);
+void initialize_piece();
 #endif  // SRC_S21_BRICK_TEST_H_

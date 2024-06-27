@@ -77,8 +77,10 @@ Singleton * s= get_instance();
 initialize_game();
 s->state = SPAWN;
       GameInfo_t game_info = updateCurrentState();
+ck_assert_int_eq(game_info.score, 0);
 s->state = MOVING;
       game_info = updateCurrentState();
+ ck_assert_int_eq(game_info.score, 0);
 s->state = ATTACHING;
       game_info = updateCurrentState();
   ck_assert_int_eq(game_info.score, 0);
@@ -122,6 +124,7 @@ userInput(Down, false);
 userInput(Up, false);
 userInput(Action, false);
 userInput(Pause, false);
+userInput(Start, false);
 userInput(Terminate, false);
 }
 END_TEST
@@ -129,6 +132,21 @@ START_TEST(s21_brick_game_test_15) {
 //  Singleton * s = get_instance();
 initialize_game();
 clear_lines(4);
+}
+END_TEST
+
+START_TEST(s21_brick_game_test_16) {
+Singleton * s = get_instance();
+initialize_game();
+initialize_piece();
+  for (int i = 4; i < HEIGHT &&  s->game.field; i++) {
+    for (int j = 0; j < WIDTH  ; j++) {
+      s->game.field[i][j] = 1;
+  }
+}
+s->state = MOVING;
+s->current_piece.type =2;
+rotate_piece();
 }
 END_TEST
 
@@ -153,6 +171,7 @@ Suite *suite(void) {
   tcase_add_test(tcase, s21_brick_game_test_13);
   tcase_add_test(tcase, s21_brick_game_test_14);
   tcase_add_test(tcase, s21_brick_game_test_15);
+  tcase_add_test(tcase, s21_brick_game_test_16);
   
 
   suite_add_tcase(suite, tcase);
@@ -175,7 +194,8 @@ int main(void) {
 }
 
 
-void initialize_piece(Piece *piece) {
+void initialize_piece() {
+  Singleton *s = get_instance();
     // Пример начальной фигуры (например, I-образная фигура)
     int shape[4][4] = {
         {1, 1, 1, 1},
@@ -186,7 +206,7 @@ void initialize_piece(Piece *piece) {
 
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
-            piece->shape[y][x] = shape[y][x];
+            s->current_piece.shape[y][x] = shape[y][x];
         }
     }
 }
