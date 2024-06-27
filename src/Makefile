@@ -100,7 +100,7 @@ check:
 
 valgrind: tests
 	>valgrep.txt
-	valgrind --trace-children=yes --track-fds=yes --track-origins=yes --leak-check=full --show-leak-kinds=all $(DIRFUNCTESTS)/objread_test 2>>valgrep.txt
+	valgrind --trace-children=yes --track-fds=yes --track-origins=yes --leak-check=full --show-leak-kinds=all $(DIRTESTS)/s21_brickgame_test 2>>valgrep.txt
 	
 	grep -e "Command" -e "jump" -e "Y: " valgrep.txt| grep -v "Y: 0" | cat
 
