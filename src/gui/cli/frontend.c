@@ -1,13 +1,11 @@
 #include "frontend.h"
 
 void main_menu_init() {
-  
   clear();
   draw_board();
   int high_score = read_high_score();
   draw_score(0, high_score, 0);
   int choice = 0;
-  int ch;
   char *choices[] = {"Tetris", "Quit"};
   int n_choices = sizeof(choices) / sizeof(char *);
 
@@ -20,7 +18,7 @@ void main_menu_init() {
       if (i == choice) attroff(A_REVERSE);
     }
     refresh();
-    ch = GET_USER_INPUT;
+    int ch = GET_USER_INPUT;
     switch (ch) {
       case KEY_UP:
         choice = (choice == 0) ? n_choices - 1 : choice - 1;
@@ -111,7 +109,7 @@ void draw_piece(Piece piece) {
 void game_over_menu() {
   clear();
   int menu_start_x = (WIDTH * 2) / 2 - 3;
-  int menu_start_y = HEIGHT / 2 - 2 / 2;
+  int menu_start_y = HEIGHT / 2 - 1;
   draw_board();
   int high_score = read_high_score();
   draw_score(0, high_score, 0);
@@ -124,7 +122,6 @@ void game_over_menu() {
   clear();
   draw_board();
   draw_score(0, high_score, 0);
-  
 }
 
 int read_high_score() {

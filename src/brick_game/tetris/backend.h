@@ -2,13 +2,13 @@
 #define BACKEND_H
 
 #define _POSIX_C_SOURCE 200809L
+#include <ncurses.h>
 #include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
-#include <ncurses.h>
 #include "structures.h"
 
 int play_tetris(int ch);
@@ -39,4 +39,4 @@ bool check_collision();
 bool check_collision_end_game();
 void attach_piece_to_field();
 void check_for_complete_lines();
-#endif // BACKEND_H
+#endif  // BACKEND_H

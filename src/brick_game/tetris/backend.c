@@ -52,9 +52,8 @@ static FSMState transitionMatrix[NUM_STATES][8] = {
                    [Down] = GAME_OVER,
                    [Start] = START}};
 
-
 int play_tetris(int ch) {
-  Singleton * s =get_instance();
+  Singleton *s = get_instance();
   s->test = (ch == 1) ? 0 : 1;
   clear();
   int menu_start_x = (WIDTH * 2) / 2 - 3;
@@ -79,9 +78,9 @@ int play_tetris(int ch) {
     ch = GET_USER_INPUT;
   }
   int res = tetris_start();
-  if (s->test!=1){
-  game_over_menu();
- }
+  if (s->test != 1) {
+    game_over_menu();
+  }
   free_game_resources();
   free_singleton();
   return res;
@@ -108,7 +107,7 @@ int tetris_start() {
     }
     userInput(keyboard_action(&ch, &pocket, &hold, false), hold);
     refresh();
-    if (s->test==1) s->state=GAME_OVER;
+    if (s->test == 1) s->state = GAME_OVER;
   }
   nodelay(stdscr, FALSE);
   return res;
@@ -131,15 +130,15 @@ GameInfo_t updateCurrentState() {
       break;
     case MOVING:
       move_piece_down();
-      s->state= MOVING;
+      s->state = MOVING;
       break;
     case ATTACHING:
       if (check_collision_end_game()) {
-        s->state= GAME_OVER;
+        s->state = GAME_OVER;
       } else {
         attach_piece_to_field();
         check_for_complete_lines();
-        s->state= SPAWN;
+        s->state = SPAWN;
       }
       break;
     default:
@@ -189,7 +188,6 @@ bool tet_timer(clock_t *current_time, clock_t *last_update_time, int speed) {
   return (((*current_time - *last_update_time) * 10000 / CLOCKS_PER_SEC) >=
           speed);
 }
-
 
 void free_game_resources() {
   Singleton *s = get_instance();
@@ -417,10 +415,10 @@ void check_for_complete_lines() {
   s->game.score += lines_cleared_score(lines_cleared);
   s->state = SPAWN;
 }
-int lines_cleared_score(int lines_cleared){
-    switch (lines_cleared) {
+int lines_cleared_score(int lines_cleared) {
+  switch (lines_cleared) {
     case 1:
-     return 100;
+      return 100;
       break;
     case 2:
       return 300;
@@ -491,10 +489,11 @@ void userInput(UserAction_t action, bool hold) {
       s->game.pause = !(s->game.pause);
       break;
     case Start:
-      if (s->state==GAME_OVER){
-      free_game_resources();
-      free_singleton();
-      tetris_start();}
+      if (s->state == GAME_OVER) {
+        free_game_resources();
+        free_singleton();
+        tetris_start();
+      }
       break;
     case Terminate:
       s->state = GAME_OVER;
@@ -503,13 +502,14 @@ void userInput(UserAction_t action, bool hold) {
 }
 
 UserAction_t keyboard_action(int *ch, int *pocket, bool *hold, bool test) {
-    Singleton * s =  get_instance();
-    if (!test)
-    *ch = GET_USER_INPUT;
+  Singleton *s = get_instance();
+  if (!test) *ch = GET_USER_INPUT;
   *hold = (*pocket == *ch) ? true : false;
   *pocket = *ch;
-  if (s->test==1) {*ch = KEY_DOWN;
-  s->game.speed=0;}
+  if (s->test == 1) {
+    *ch = KEY_DOWN;
+    s->game.speed = 0;
+  }
   switch (*ch) {
     case KEY_LEFT:
       return Left;
