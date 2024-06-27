@@ -96,7 +96,7 @@ START_TEST(s21_brick_game_test_11) {
 END_TEST
 START_TEST(s21_brick_game_test_12) { attach_piece_to_field(); }
 
-START_TEST(s21_brick_game_test_14) {
+START_TEST(s21_brick_game_test_13) {
   Singleton *s = get_instance();
   initialize_game();
   s->action = Left;
@@ -126,13 +126,13 @@ START_TEST(s21_brick_game_test_14) {
   ck_assert_int_eq(2, Terminate);
 }
 END_TEST
-START_TEST(s21_brick_game_test_15) {
+START_TEST(s21_brick_game_test_14) {
   initialize_game();
   clear_lines(4);
 }
 END_TEST
 
-START_TEST(s21_brick_game_test_16) {
+START_TEST(s21_brick_game_test_15) {
   Singleton *s = get_instance();
   initialize_game();
   initialize_piece();
@@ -144,6 +144,29 @@ START_TEST(s21_brick_game_test_16) {
   s->state = MOVING;
   s->current_piece.type = 2;
   rotate_piece();
+}
+END_TEST
+START_TEST(s21_brick_game_test_16) {
+  int src[4][4] = {{1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
+  int dest[4][4] = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
+  int check[4][4] = {{1, 0, 0, 0}, {1, 0, 0, 0}, {1, 0, 0, 0}, {1, 0, 0, 0}};
+  copy_shape(dest, src);
+  for (int y = 0; y < 4; y++) {
+    for (int x = 0; x < 4; x++) {
+      ck_assert_int_eq(dest[y][x], check[y][x]);
+    }
+  }
+}
+END_TEST
+START_TEST(s21_brick_game_test_17) {
+  Singleton s;
+  s.current_piece.x = 0;
+  s.current_piece.y = 0;
+  bool result = attempt_move(&s, 1, 1);
+
+  ck_assert_int_eq(result, true);
+  ck_assert_int_eq(s.current_piece.x, 1);
+  ck_assert_int_eq(s.current_piece.y, 1);
 }
 END_TEST
 
@@ -163,9 +186,11 @@ Suite *suite(void) {
   tcase_add_test(tcase, s21_brick_game_test_10);
   tcase_add_test(tcase, s21_brick_game_test_11);
   tcase_add_test(tcase, s21_brick_game_test_12);
+  tcase_add_test(tcase, s21_brick_game_test_13);
   tcase_add_test(tcase, s21_brick_game_test_14);
   tcase_add_test(tcase, s21_brick_game_test_15);
   tcase_add_test(tcase, s21_brick_game_test_16);
+  tcase_add_test(tcase, s21_brick_game_test_17);
 
   suite_add_tcase(suite, tcase);
   return suite;

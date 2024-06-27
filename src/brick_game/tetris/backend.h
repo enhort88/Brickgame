@@ -41,6 +41,10 @@ bool check_collision_end_game();
 void attach_piece_to_field();
 void check_for_complete_lines();
 
+void copy_shape(int dest[4][4], int src[4][4]);
+void rotate_temp_shape(int shape[4][4], int temp_shape[4][4]);
+bool attempt_move(Singleton *s, int dx, int dy);
+bool resolve_collision(Singleton *s, int temp_shape[4][4]);
 // void test_print(clock_t current_time, clock_t last_update_time);
 // const char *getActionName(UserAction_t action);
 // const char *getStateName(FSMState state);

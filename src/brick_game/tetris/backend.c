@@ -270,80 +270,74 @@ void move_piece_right() {
 
 void move_piece_up() {}
 
-void rotate_piece() {
-  Singleton *s = get_instance();
-  if (s->state == MOVING && s->current_piece.type != 1) {
-    int temp_shape[4][4] = {0};
-    // Транспонируем матрицу
-    for (int y = 0; y < 4; y++) {
-      for (int x = 0; x < 4; x++) {
-        temp_shape[x][y] = s->current_piece.shape[y][x];
-      }
-    }
-    // Отражаем матрицу по вертикали
-    for (int y = 0; y < 4; y++) {
-      for (int x = 0; x < 4; x++) {
-        s->current_piece.shape[x][y] = temp_shape[x][3 - y];
-      }
-    }
-    // Проверка коллизий
-    if (check_collision()) {
-      // Попробуем сдвинуть фигуру, чтобы она не застревала в стене
-      bool collision = true;
-      for (int dx = -1; dx <= 1 && collision; dx++) {
-        for (int dy = -1; dy <= 1 && collision; dy++) {
-          s->current_piece.x += dx;
-          s->current_piece.y += dy;
-          if (!check_collision()) {
-            collision = false;
-            break;
-          }
-          s->current_piece.x -= dx;
-          s->current_piece.y -= dy;
-        }
-      }
-      // Если не удалось избежать коллизий, проверим границы и скорректируем
-      if (collision) {
-        // Корректируем положение фигуры относительно границ поля
-        for (int x = 0; x < 4; x++) {
-          for (int y = 0; y < 4; y++) {
-            if (s->current_piece.shape[y][x] != 0) {
-              if (s->current_piece.x + x < 0) {
-                s->current_piece.x++;
-              }
-              if (s->current_piece.x + x >= WIDTH) {
-                s->current_piece.x--;
-              }
-              if (s->current_piece.y + y >= HEIGHT) {
-                s->current_piece.y--;
-              }
-            }
-          }
-        }
-        // Повторная проверка коллизий после корректировки
-        if (check_collision()) {
-          // Попробуем переместить фигуру только по горизонтали
-          for (int dx = -2; dx <= 2 && collision; dx++) {
-            s->current_piece.x += dx;
-            if (!check_collision()) {
-              collision = false;
-              break;
-            }
-            s->current_piece.x -= dx;
-          }
-          // Если все еще не удалось избежать коллизий, отменяем поворот
-          if (collision) {
-            for (int y = 0; y < 4; y++) {
-              for (int x = 0; x < 4; x++) {
-                s->current_piece.shape[y][x] = temp_shape[y][x];
-              }
-            }
-          }
-        }
-      }
+void copy_shape(int dest[4][4], int src[4][4]) {
+  for (int y = 0; y < 4; y++) {
+    for (int x = 0; x < 4; x++) {
+      dest[x][y] = src[y][x];
     }
   }
 }
+
+void rotate_temp_shape(int shape[4][4], int temp_shape[4][4]) {
+  for (int y = 0; y < 4; y++) {
+    for (int x = 0; x < 4; x++) {
+      shape[x][y] = temp_shape[x][3 - y];
+    }
+  }
+}
+
+bool attempt_move(Singleton *s, int dx, int dy) {
+  s->current_piece.x += dx;
+  s->current_piece.y += dy;
+  if (!check_collision()) {
+    return true;
+  }
+  s->current_piece.x -= dx;
+  s->current_piece.y -= dy;
+  return false;
+}
+
+bool resolve_collision(Singleton *s, int temp_shape[4][4]) {
+  for (int dx = -1; dx <= 1; dx++) {
+    for (int dy = -1; dy <= 1; dy++) {
+      if (attempt_move(s, dx, dy)) {
+        return true;
+      }
+    }
+  }
+
+  for (int x = 0; x < 4; x++) {
+    for (int y = 0; y < 4; y++) {
+      if (s->current_piece.shape[y][x] != 0) {
+        if (s->current_piece.x + x < 0) s->current_piece.x++;
+        if (s->current_piece.x + x >= WIDTH) s->current_piece.x--;
+        if (s->current_piece.y + y >= HEIGHT) s->current_piece.y--;
+      }
+    }
+  }
+
+  for (int dx = -2; dx <= 2; dx++) {
+    if (attempt_move(s, dx, 0)) {
+      return true;
+    }
+  }
+
+  copy_shape(s->current_piece.shape, temp_shape);
+  return false;
+}
+
+void rotate_piece() {
+  Singleton *s = get_instance();
+  if (s->state != MOVING || s->current_piece.type == 1) return;
+  int temp_shape[4][4] = {0};
+  copy_shape(temp_shape, s->current_piece.shape);
+  rotate_temp_shape(s->current_piece.shape, temp_shape);
+
+  if (check_collision() && !resolve_collision(s, temp_shape)) {
+    copy_shape(s->current_piece.shape, temp_shape);
+  }
+}
+
 bool check_collision() {
   Singleton *s = get_instance();
   for (int y = 0; y < 4; y++) {
@@ -367,11 +361,9 @@ bool check_collision_end_game() {
       if (s->current_piece.shape[y][x] != 0) {
         int new_y = s->current_piece.y + y;
         int new_x = s->current_piece.x + x;
-        // Проверка на выход за границы поля
         if (new_y >= HEIGHT || new_x < 0 || new_x >= WIDTH) {
           continue;
         }
-        // Проверка на столкновение с уже существующими фигурами
         if (s->game.field[new_y][new_x] != 0) {
           return true;
         }
@@ -410,8 +402,7 @@ void check_for_complete_lines() {
     if (complete) {
       clear_lines(y);
       lines_cleared++;
-      y--;  // Проверяем ту же строку ещё раз, так как она теперь заполнена
-            // строкой выше
+      y--;
     }
   }
   s->game.score += lines_cleared_score(lines_cleared);
