@@ -106,7 +106,7 @@ int tetris_start() {
       last_update_time = current_time;
     }
     userInput(keyboard_action(&ch, &pocket, &hold, false), hold);
-//    test_print(current_time, last_update_time);
+    //    test_print(current_time, last_update_time);
     refresh();
     if (s->test == 1) s->state = GAME_OVER;
   }
@@ -475,10 +475,8 @@ void userInput(UserAction_t action, bool hold) {
       update_field(s->game);
       break;
     case Down:
-      //      if (s->state == MOVING) {
       while (s->state == MOVING) move_piece_down();
       update_field(s->game);
-      //      }
       break;
     case Up:
       move_piece_up();

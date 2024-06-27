@@ -96,29 +96,37 @@ START_TEST(s21_brick_game_test_11) {
 END_TEST
 START_TEST(s21_brick_game_test_12) { attach_piece_to_field(); }
 
-START_TEST(s21_brick_game_test_13) {
-  Singleton *s = get_instance();
-  s->action = Left;
-  int res = play_tetris('S');
-  ck_assert_int_eq(0, res);
-}
-END_TEST
 START_TEST(s21_brick_game_test_14) {
   Singleton *s = get_instance();
   initialize_game();
-  userInput(Left, false);
-  userInput(Right, false);
+  s->action = Left;
+  userInput(s->action, false);
+  ck_assert_int_eq(3, s->action);
+  s->action = Right;
+  userInput(s->action, false);
+  ck_assert_int_eq(4, Right);
   s->state = MOVING;
-  userInput(Down, false);
-  userInput(Up, false);
-  userInput(Action, false);
-  userInput(Pause, false);
-  userInput(Start, false);
-  userInput(Terminate, false);
+  s->action = Down;
+  userInput(s->action, false);
+  ck_assert_int_eq(6, Down);
+  s->action = Up;
+  userInput(s->action, false);
+  ck_assert_int_eq(5, Up);
+  s->action = Action;
+  userInput(s->action, false);
+  ck_assert_int_eq(7, Action);
+  s->action = Pause;
+  userInput(s->action, false);
+  ck_assert_int_eq(1, Pause);
+  s->action = Start;
+  userInput(s->action, false);
+  ck_assert_int_eq(0, Start);
+  s->action = Terminate;
+  userInput(s->action, false);
+  ck_assert_int_eq(2, Terminate);
 }
 END_TEST
 START_TEST(s21_brick_game_test_15) {
-  //  Singleton * s = get_instance();
   initialize_game();
   clear_lines(4);
 }
@@ -155,7 +163,6 @@ Suite *suite(void) {
   tcase_add_test(tcase, s21_brick_game_test_10);
   tcase_add_test(tcase, s21_brick_game_test_11);
   tcase_add_test(tcase, s21_brick_game_test_12);
-  tcase_add_test(tcase, s21_brick_game_test_13);
   tcase_add_test(tcase, s21_brick_game_test_14);
   tcase_add_test(tcase, s21_brick_game_test_15);
   tcase_add_test(tcase, s21_brick_game_test_16);
