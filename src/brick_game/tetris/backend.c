@@ -57,7 +57,7 @@ int play_tetris(int ch) {
   s->test = (ch == 1) ? 0 : 1;
   clear();
   int menu_start_x = (WIDTH * 2) / 2 - 3;
-  int menu_start_y = HEIGHT / 2 - 2 / 2;
+  int menu_start_y = HEIGHT / 2 - 1;
   draw_board();
   int high_score = read_high_score();
   draw_score(0, high_score, 0);
@@ -106,6 +106,7 @@ int tetris_start() {
       last_update_time = current_time;
     }
     userInput(keyboard_action(&ch, &pocket, &hold, false), hold);
+//    test_print(current_time, last_update_time);
     refresh();
     if (s->test == 1) s->state = GAME_OVER;
   }
@@ -120,7 +121,7 @@ GameInfo_t updateCurrentState() {
   int pocket = '\0';
   s->action = keyboard_action(&ch, &pocket, &hold, false);
   userInput(s->action, hold);
-  if (s->action > 0 && s->action <= 8) {
+  if (s->action > 0 && s->action < 8) {
     s->state = transitionMatrix[s->state][s->action];
   }
   switch (s->state) {
@@ -130,7 +131,7 @@ GameInfo_t updateCurrentState() {
       break;
     case MOVING:
       move_piece_down();
-      s->state = MOVING;
+      //      s->state = MOVING;
       break;
     case ATTACHING:
       if (check_collision_end_game()) {
@@ -184,7 +185,8 @@ int initialize_game() {
   return res;
 }
 
-bool tet_timer(clock_t *current_time, clock_t *last_update_time, int speed) {
+bool tet_timer(clock_t const *current_time, clock_t const *last_update_time,
+               int speed) {
   return (((*current_time - *last_update_time) * 10000 / CLOCKS_PER_SEC) >=
           speed);
 }
@@ -447,10 +449,10 @@ void clear_lines(int line) {
 }
 void change_speed() {
   Singleton *s = get_instance();
-  int speed_levels[] = {7200, 6400, 5600, 4800, 4000,
-                        3200, 2400, 1600, 800,  200};
-  int score_thresholds[] = {600,  1200, 1800, 2400, 3000,
-                            3600, 4200, 4800, 5400, 6000};
+  int const speed_levels[] = {7200, 6400, 5600, 4800, 4000,
+                              3200, 2400, 1600, 800,  200};
+  int const score_thresholds[] = {600,  1200, 1800, 2400, 3000,
+                                  3600, 4200, 4800, 5400, 6000};
   int num_levels = sizeof(speed_levels) / sizeof(speed_levels[0]);
   for (int i = num_levels - 1; i >= 0; i--) {
     if (s->game.score >= score_thresholds[i]) {
@@ -473,10 +475,10 @@ void userInput(UserAction_t action, bool hold) {
       update_field(s->game);
       break;
     case Down:
-      if (s->state == MOVING) {
-        while (s->state != ATTACHING) move_piece_down();
-        update_field(s->game);
-      }
+      //      if (s->state == MOVING) {
+      while (s->state == MOVING) move_piece_down();
+      update_field(s->game);
+      //      }
       break;
     case Up:
       move_piece_up();
@@ -531,3 +533,57 @@ UserAction_t keyboard_action(int *ch, int *pocket, bool *hold, bool test) {
       return ERR;
   }
 }
+
+// void test_print(clock_t current_time, clock_t last_update_time) {
+//   Singleton *s = get_instance();
+
+//   mvprintw(19, 24, "Currtime: %ld", current_time);
+//   mvprintw(20, 24, "LastUpT: %ld", last_update_time);
+//   mvprintw(21, 24, "RES: %ld",
+//            (current_time - last_update_time) * 10000 / CLOCKS_PER_SEC);
+//   mvprintw(10, 24, "ACTION:%s\tSTATE:%s", getActionName(s->action),
+//            getStateName(s->state));
+//   //  draw_key(ch);  // del
+//   refresh();
+// }
+// const char *getActionName(UserAction_t action) {
+//   switch (action) {
+//     case Start:
+//       return "Start";
+//     case Pause:
+//       return "Pause";
+//     case Terminate:
+//       return "Terminate";
+//     case Left:
+//       return "Left";
+//     case Right:
+//       return "Right";
+//     case Up:
+//       return "Up";
+//     case Down:
+//       return "Down";
+//     case Action:
+//       return "Action";
+//     default:
+//       return "UNKNOWN";
+//   }
+// }
+// const char *getStateName(FSMState state) {
+//   switch (state) {
+//     case START:
+//       return "START";
+//     case SPAWN:
+//       return "SPAWN";
+//     case MOVING:
+//       return "MOVING";
+//     case SHIFTING:
+//       return "SHIFTING";
+//     case ATTACHING:
+//       return "ATTACHING";
+//     case GAME_OVER:
+//       return "GAME_OVER";
+//       // case PAUSE: return "PAUSE";
+//     default:
+//       return "UNKNOWN";
+//   }
+// }
