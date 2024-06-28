@@ -34,14 +34,14 @@ START_TEST(s21_brick_game_test_2) {
 END_TEST
 START_TEST(s21_brick_game_test_3) {
   Singleton *s = get_instance();
-  s->current_piece.y = 5;  // Исходная позиция
+  s->current_piece.y = 5;  
   move_piece_down();
   ck_assert_int_eq(s->current_piece.y, 6);
 }
 END_TEST
 START_TEST(s21_brick_game_test_4) {
   Singleton *s = get_instance();
-  s->current_piece.x = 5;  // Исходная позиция
+  s->current_piece.x = 5;  
   s->state = MOVING;
   move_piece_left();
   ck_assert_int_eq(s->current_piece.x, 4);
@@ -49,7 +49,7 @@ START_TEST(s21_brick_game_test_4) {
 END_TEST
 START_TEST(s21_brick_game_test_5) {
   Singleton *s = get_instance();
-  s->current_piece.x = 5;  // Исходная позиция
+  s->current_piece.x = 5;  
   s->state = MOVING;
   move_piece_right();
   ck_assert_int_eq(s->current_piece.x, 6);
@@ -213,7 +213,6 @@ int main(void) {
 
 void initialize_piece() {
   Singleton *s = get_instance();
-  // Пример начальной фигуры (например, I-образная фигура)
   int shape[4][4] = {{1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
 
   for (int y = 0; y < 4; y++) {
