@@ -1,7 +1,7 @@
 #include <ncurses.h>
 
-#include "./brick_game/tetris/backend.h"
-#include "./gui/cli/frontend.h"
+#include "../../brick_game/tetris/backend.h"
+#include "frontend.h"
 
 int main() {
   initscr();

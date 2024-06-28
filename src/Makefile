@@ -44,7 +44,7 @@ $(STATICLIB):
 
 install: 
 	mkdir -p $(DIRBUILD)
-	$(CC) -c $(CFLAGS) $(DIRTET)/*.c $(DIRGUI)/*.c main.c
+	$(CC) -c $(CFLAGS) $(DIRTET)/*.c $(DIRGUI)/*.c 
 	$(CC) ./*.o -o $(DIRBUILD)/$(APPNAME) $(LDFLAGS)
 	touch $(DIRBUILD)/highscore.txt
 	rm -f *.o

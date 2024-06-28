@@ -131,7 +131,6 @@ GameInfo_t updateCurrentState() {
       break;
     case MOVING:
       move_piece_down();
-      //      s->state = MOVING;
       break;
     case ATTACHING:
       if (check_collision_end_game()) {
@@ -218,12 +217,9 @@ void init_piece() {
   clock_gettime(CLOCK_MONOTONIC, &tv);
   unsigned int seed = tv.tv_sec * 1000000 + tv.tv_nsec / 1000;
   srand(seed);
-  // Инициализация новой фигуры в верхней части экрана
   s->current_piece.x = WIDTH / 2 - 2;
   s->current_piece.y = 0;
-  // Определение различных форм фигур
   int shapes[7][4][4] = SHAPES;
-  // Инициализация генератора случайных чисел
   srand(time(NULL));
   int shape_next = rand() % 7;
   for (int i = 0; i < 4; i++) {
@@ -287,26 +283,27 @@ void rotate_temp_shape(int shape[4][4], int temp_shape[4][4]) {
 }
 
 bool attempt_move(Singleton *s, int dx, int dy) {
+  bool res = false;
   s->current_piece.x += dx;
   s->current_piece.y += dy;
   if (!check_collision()) {
-    return true;
-  }
+    res = true;
+  }else{
   s->current_piece.x -= dx;
-  s->current_piece.y -= dy;
-  return false;
+  s->current_piece.y -= dy;}
+  return res;
 }
 
 bool resolve_collision(Singleton *s, int temp_shape[4][4]) {
+  bool res = false;
   for (int dx = -1; dx <= 1; dx++) {
     for (int dy = -1; dy <= 1; dy++) {
       if (attempt_move(s, dx, dy)) {
-        return true;
+        res = true;
       }
     }
   }
-
-  for (int x = 0; x < 4; x++) {
+  for (int x = 0; x < 4 && !res; x++) {
     for (int y = 0; y < 4; y++) {
       if (s->current_piece.shape[y][x] != 0) {
         if (s->current_piece.x + x < 0) s->current_piece.x++;
@@ -315,20 +312,18 @@ bool resolve_collision(Singleton *s, int temp_shape[4][4]) {
       }
     }
   }
-
-  for (int dx = -2; dx <= 2; dx++) {
+  for (int dx = -2; dx <= 2 && !res ; dx++) {
     if (attempt_move(s, dx, 0)) {
-      return true;
+      res = true;
     }
   }
-
-  copy_shape(s->current_piece.shape, temp_shape);
-  return false;
+  if (!res) copy_shape(s->current_piece.shape, temp_shape);
+  return res;
 }
 
 void rotate_piece() {
   Singleton *s = get_instance();
-  if (s->state != MOVING || s->current_piece.type == 1) return;
+  if (s->state == MOVING && s->current_piece.type != 1){
   int temp_shape[4][4] = {0};
   copy_shape(temp_shape, s->current_piece.shape);
   rotate_temp_shape(s->current_piece.shape, temp_shape);
@@ -336,9 +331,11 @@ void rotate_piece() {
   if (check_collision() && !resolve_collision(s, temp_shape)) {
     copy_shape(s->current_piece.shape, temp_shape);
   }
+  }
 }
 
 bool check_collision() {
+  bool res = false;
   Singleton *s = get_instance();
   for (int y = 0; y < 4; y++) {
     for (int x = 0; x < 4; x++) {
@@ -347,14 +344,15 @@ bool check_collision() {
         int new_x = s->current_piece.x + x;
         if (new_y >= HEIGHT || new_x < 0 || new_x >= WIDTH ||
             s->game.field[new_y][new_x] != 0) {
-          return true;
+          res = true;
         }
       }
     }
   }
-  return false;
+  return res;
 }
 bool check_collision_end_game() {
+  bool res = false;
   Singleton *s = get_instance();
   for (int y = 0; y < 4; y++) {
     for (int x = 0; x < 4; x++) {
@@ -365,12 +363,12 @@ bool check_collision_end_game() {
           continue;
         }
         if (s->game.field[new_y][new_x] != 0) {
-          return true;
+          res = true;
         }
       }
     }
   }
-  return false;
+  return res;
 }
 void attach_piece_to_field() {
   Singleton *s = get_instance();
